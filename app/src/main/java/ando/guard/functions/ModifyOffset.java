@@ -1,6 +1,6 @@
-package ando.guard;
+package ando.guard.functions;
 
-import org.jetbrains.annotations.NotNull;
+import androidx.annotation.NonNull;
 
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -101,7 +101,8 @@ class PointDouble {
         this.y = y;
     }
 
-    @NotNull
+    @NonNull
+    @Override
     public String toString() {
         return "x=" + x + ", y=" + y;
     }

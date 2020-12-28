@@ -1,4 +1,4 @@
-package ando.guard;
+package ando.guard.functions;
 
 import java.io.InputStream;
 
@@ -11,7 +11,6 @@ public class LocationChange {
             PointDouble s2c = instance.s2c(new PointDouble(longitude, latitude));
             return s2c;
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return null;

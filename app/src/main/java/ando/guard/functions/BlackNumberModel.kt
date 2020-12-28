@@ -1,4 +1,4 @@
-package ando.guard
+package ando.guard.functions
 
 import org.litepal.annotation.Column
 import org.litepal.crud.LitePalSupport

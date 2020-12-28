@@ -1,4 +1,4 @@
-package ando.guard.receiver;
+package ando.guard.functions.receiver;
 
 import android.app.admin.DeviceAdminReceiver;
 

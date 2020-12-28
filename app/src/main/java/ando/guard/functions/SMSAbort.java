@@ -1,4 +1,4 @@
-package ando.guard;
+package ando.guard.functions;
 
 import android.app.admin.DevicePolicyManager;
 import android.content.BroadcastReceiver;
@@ -11,7 +11,8 @@ import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
 import android.text.TextUtils;
 
-import ando.guard.receiver.AdminReceiver;
+import ando.guard.R;
+import ando.guard.functions.receiver.AdminReceiver;
 
 public class SMSAbort extends BroadcastReceiver {
 

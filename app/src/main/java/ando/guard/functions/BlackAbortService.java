@@ -1,4 +1,4 @@
-package ando.guard;
+package ando.guard.functions;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -14,6 +14,7 @@ import android.telephony.PhoneStateListener;
 import android.telephony.SmsMessage;
 import android.telephony.TelephonyManager;
 
+import com.android.internal.telephony.ITelephony;
 
 import java.lang.reflect.Method;
 
@@ -47,8 +48,6 @@ public class BlackAbortService extends Service {
 
     /**
      * 电话状态监听
-     *
-     * @author Administrator
      */
     class MyPhoneStateListener extends PhoneStateListener {
         @Override
@@ -102,8 +101,6 @@ public class BlackAbortService extends Service {
 
     /**
      * 短信拦截
-     *
-     * @author Administrator
      */
     static class SMSAbort extends BroadcastReceiver {
 
@@ -145,12 +142,11 @@ public class BlackAbortService extends Service {
             //调用方法,拿到iBinder
             IBinder ibinder = (IBinder) method.invoke(null, TELEPHONY_SERVICE);
             //拷贝aidl，拿到Telephone代理对象
-//			com.android.internal.telephony.ITelephony itel = ITelephony.Stub.asInterface(ibinder);
-//			//调用endcall方法
-//			itel.endCall();
-
+            ITelephony itel = ITelephony.Stub.asInterface(ibinder);
+            if (itel != null) {
+                itel.endCall();
+            }
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }

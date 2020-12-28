@@ -9,6 +9,8 @@
     <color name="white">#FFFFFFFF</color>
 
 
+    <color name="color_main_theme">#23ADE5</color>
+    <color name="color_main_theme_dark">#CC23ADE5</color>
     <color name="transparent">#00000000</color>
     <color name="color_font_black">#323232</color>
     <color name="color_font_gray">#A2A2A2</color>
