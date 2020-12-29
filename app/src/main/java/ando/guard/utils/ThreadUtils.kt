@@ -13,6 +13,8 @@ import java.util.concurrent.atomic.AtomicLong
 
 /**
  * Thread Util
+ *
+ * based on https://github.com/Blankj/AndroidUtilCode/blob/master/lib/utilcode/src/test/java/com/blankj/utilcode/util/ThreadUtilsTest.java
  */
 object ThreadUtils {
 
@@ -1126,7 +1128,6 @@ object ThreadUtils {
     ) {
         private val mSubmittedCount = AtomicInteger()
         private val mWorkQueue: LinkedBlockingQueue4Util
-        private val submittedCount: Int get() = mSubmittedCount.get()
 
         override fun afterExecute(r: Runnable, t: Throwable?) {
             mSubmittedCount.decrementAndGet()
@@ -1444,5 +1445,47 @@ object ThreadUtils {
                 }
                 return mValue
             }
+    }
+}
+
+/**
+ * Task，对回调做catch，防止崩溃
+ */
+class ThreadTask<T>(
+    private val doInBackground: (() -> (T?))?,
+    private val callback: ((T?) -> Unit)?
+) :
+    ThreadUtils.Task<T>() {
+    override fun doInBackground(): T? {
+        try {
+            return doInBackground?.invoke()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return null
+    }
+
+    override fun onSuccess(result: T?) {
+        try {
+            callback?.invoke(result)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    override fun onFail(t: Throwable?) {
+        try {
+            callback?.invoke(null)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    override fun onCancel() {
+        try {
+            callback?.invoke(null)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 }

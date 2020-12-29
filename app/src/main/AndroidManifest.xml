@@ -4,21 +4,13 @@
     package="ando.guard"
     android:installLocation="auto">
 
-    <!--    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />-->
-    <!--    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />-->
+    <!-- <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> -->
+    <!-- <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> -->
 
-    <!--  读写联系人  -->
+    <!-- 读写联系人 -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
-
-    <uses-permission android:name="android.permission.CALL_PHONE" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.MANAGE_OWN_CALLS" />
 
     <uses-feature
         android:name="android.hardware.telephony"
@@ -45,22 +37,30 @@
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ui.MainActivity"
-            android:screenOrientation="portrait">
+        <activity android:name=".ui.MainActivity" />
+        <activity android:name=".ui.blocked.BlockedNumbersActivity" >
+            <!-- 提供打电话的UI -->
             <intent-filter>
-                <action android:name="android.intent.action.DIAL" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <data android:scheme="tel" />
+                <action android:name="android.intent.action.DIAL"/>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="tel"/>
+            </intent-filter>
+            <!-- region provides dial UI -->
+            <intent-filter>
+                <action android:name="android.intent.action.DIAL"/>
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
 
+
         <activity android:name=".contact.ContactManager" />
         <activity android:name=".contact.ContactAdder" />
-
         <activity android:name=".ui.PickContactActivity" />
 
         <!-- 命令短信拦截 -->
@@ -69,12 +69,10 @@
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
-
         <!-- 获取位置的服务 -->
         <service android:name=".functions.LocationService" />
         <!-- 黑名单拦截服务 -->
         <service android:name=".functions.BlackAbortService" />
-
     </application>
 
 </manifest>

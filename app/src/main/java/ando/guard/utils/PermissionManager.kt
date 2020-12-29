@@ -14,8 +14,12 @@ import com.permissionx.guolindev.PermissionX
  */
 object PermissionManager {
 
-    private val CONTACTS =
-        arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)
+    private val PERMISSION_CONTACTS =
+        arrayOf(
+            Manifest.permission.GET_ACCOUNTS,
+            Manifest.permission.READ_CONTACTS,
+            Manifest.permission.WRITE_CONTACTS
+        )
 
     /**
      * 相应的清单文件中配置:
@@ -32,7 +36,7 @@ object PermissionManager {
      *      android:maxSdkVersion="28"
      *      tools:ignore="ScopedStorage" />
      */
-    private val STORAGE_PERMISSION = if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P)
+    private val PERMISSION_STORAGE = if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P)
         arrayOf(
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE
@@ -44,7 +48,7 @@ object PermissionManager {
         block: (allGranted: Boolean) -> Unit? = {},
     ) {
         PermissionX.init(activity)
-            .permissions(*CONTACTS)
+            .permissions(*PERMISSION_CONTACTS)
             .onForwardToSettings { scope, deniedList ->
                 scope.showForwardToSettingsDialog(deniedList, "请在设置中手动开启以下权限", "允许", "取消")
             }
@@ -70,7 +74,7 @@ object PermissionManager {
         block: (allGranted: Boolean) -> Unit? = {},
     ) {
         PermissionX.init(activity)
-            .permissions(*STORAGE_PERMISSION)
+            .permissions(*PERMISSION_STORAGE)
             .onForwardToSettings { scope, deniedList ->
                 scope.showForwardToSettingsDialog(deniedList, "请在设置中手动开启以下权限", "允许", "取消")
             }
