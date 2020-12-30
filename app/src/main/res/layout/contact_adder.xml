@@ -2,64 +2,97 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <TableLayout android:layout_width="match_parent"
-        android:layout_height="match_parent">
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
         <TableRow>
-            <TextView android:layout_width="wrap_content"
+
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/targetAccountLabel"/>
+                android:text="@string/targetAccountLabel" />
         </TableRow>
+
         <TableRow>
-            <Spinner android:layout_height="wrap_content"
+
+            <Spinner
+                android:id="@+id/accountSpinner"
                 android:layout_width="match_parent"
-                android:layout_weight="1"
-                android:id="@+id/accountSpinner"/>
-        </TableRow>
-        <TableRow>
-            <TextView android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/contactNameLabel"/>
+                android:layout_weight="1" />
         </TableRow>
+
         <TableRow>
-            <EditText android:id="@+id/contactNameEditText"
+
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:layout_weight="1"/>
+                android:text="@string/contactNameLabel" />
         </TableRow>
+
         <TableRow>
-            <TextView android:text="@string/contactPhoneLabel"
+
+            <EditText
+                android:id="@+id/contactNameEditText"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-        </TableRow>
-        <TableRow>
-            <EditText android:id="@+id/contactPhoneEditText"
                 android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:layout_weight="1"/>
-            <Spinner android:id="@+id/contactPhoneTypeSpinner"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_weight="1" />
         </TableRow>
+
         <TableRow>
-            <TextView android:text="@string/contactEmailLabel"
+
+            <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-        </TableRow>
-        <TableRow>
-            <EditText android:id="@+id/contactEmailEditText"
                 android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:layout_weight="1"/>
-            <Spinner android:id="@+id/contactEmailTypeSpinner"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:text="@string/contactPhoneLabel" />
         </TableRow>
+
         <TableRow>
-            <Button android:layout_height="wrap_content"
-                android:text="@string/save"
+
+            <EditText
+                android:id="@+id/contactPhoneEditText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <Spinner
+                android:id="@+id/contactPhoneTypeSpinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/contactEmailLabel" />
+        </TableRow>
+
+        <TableRow>
+
+            <EditText
+                android:id="@+id/contactEmailEditText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <Spinner
+                android:id="@+id/contactEmailTypeSpinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </TableRow>
+
+        <TableRow>
+
+            <Button
                 android:id="@+id/contactSaveButton"
                 android:layout_width="match_parent"
-                android:layout_weight="1"/>
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/save" />
         </TableRow>
     </TableLayout>
 </ScrollView>

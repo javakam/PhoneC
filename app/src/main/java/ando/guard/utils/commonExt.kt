@@ -1,9 +1,11 @@
 package ando.guard.utils
 
+import ando.file.core.FileUtils
 import ando.guard.App
-import ando.guard.toastShort
+import ando.guard.common.toastShort
 import android.app.Activity
 import android.content.*
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Paint
 import android.graphics.drawable.Drawable
@@ -11,6 +13,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
+import android.util.TypedValue
 import android.view.View
 import android.view.ViewTreeObserver
 import android.view.Window
@@ -25,8 +28,8 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
-import java.io.OutputStream
-import java.util.*
+import java.io.*
+
 
 /**
  * Title: 扩展函数
@@ -129,6 +132,79 @@ fun TextView.underlineText() {
     paintFlags = paintFlags or Paint.UNDERLINE_TEXT_FLAG
 }
 
+fun write2File(input: InputStream?, fileParentPath: String?, filePath: String?) {
+    if (fileParentPath.isNullOrBlank() || filePath.isNullOrBlank()) return
+    val targetFile = File(fileParentPath, filePath)
+    if (targetFile.exists() && targetFile.isDirectory) targetFile.delete()
+    if (targetFile.parentFile?.exists() == false) {
+        targetFile.parentFile?.mkdirs()
+    }
+    if (!targetFile.exists()) {
+        targetFile.createNewFile()
+    }
+    FileUtils.write2File(input, targetFile.absolutePath)
+}
+
+fun readAssetsDataFile(assetsFileName: String, targetFileParentPath: String?, targetFilePath: String?) {
+    try {
+        App.INSTANCE.assets.open(assetsFileName).use {
+            write2File(it,targetFileParentPath,targetFilePath)
+        }
+    } catch (e: IOException) {
+        e.printStackTrace()
+    }
+}
+
+fun dp2px(context: Context, dpValue: Int): Int {
+    return TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP,
+        dpValue.toFloat(),
+        context.resources.displayMetrics
+    ).toInt()
+}
+
+/**
+ * 将json数据变成字符串
+ */
+fun readAssetsDataString(fileName: String): String {
+    val sb = StringBuilder()
+    var bf: BufferedReader? = null
+    try {
+        bf = BufferedReader(InputStreamReader(App.INSTANCE.assets.open(fileName)))
+        var line: String?
+        while (bf.readLine().also { line = it } != null) {
+            sb.append(line)
+        }
+    } catch (e: IOException) {
+        e.printStackTrace()
+    } finally {
+        try {
+            bf?.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+    return sb.toString()
+}
+
+fun getStatusBarHeight(): Int {
+    val res = Resources.getSystem()
+    val resourceId = res.getIdentifier("status_bar_height", "dimen", "android")
+    return if (resourceId > 0) res.getDimensionPixelSize(resourceId) else 0
+}
+
+/**
+ * 屏幕的宽度 screen width in pixels
+ */
+val Context.screenWidth: Int
+    get() = resources.displayMetrics.widthPixels
+
+/**
+ * 屏幕的高度 screen height in pixels
+ */
+val Context.screenHeight: Int
+    get() = resources.displayMetrics.heightPixels
+
 fun Context.browser(url: String, newTask: Boolean = false): Boolean {
     return try {
         val intent = Intent(Intent.ACTION_VIEW)
@@ -149,18 +225,6 @@ fun Context.browser(url: String, newTask: Boolean = false): Boolean {
         false
     }
 }
-
-/**
- * 屏幕的宽度 screen width in pixels
- */
-val Context.screenWidth: Int
-    get() = resources.displayMetrics.widthPixels
-
-/**
- * 屏幕的高度 screen height in pixels
- */
-val Context.screenHeight: Int
-    get() = resources.displayMetrics.heightPixels
 
 //MediaStore
 //------------------------------------------------------------------------------------------------

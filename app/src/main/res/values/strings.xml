@@ -40,6 +40,10 @@
     <string name="choose_photo">选择照片</string>
     <string name="remove_photo">移除照片</string>
 
+    <!-- Settings -->
+    <string name="contacts">联系人</string>
+    <string name="favorites">我的收藏</string>
+
     <!-- Emails -->
     <string name="email">电子邮箱</string>
     <string name="home">住家</string>
@@ -47,6 +51,7 @@
     <string name="other">其它</string>
 
     <!-- Phone numbers -->
+    <string name="add_number">添加号码</string>
     <string name="number">号码</string>
     <string name="mobile">手机</string>
     <string name="main_number">主用</string>
@@ -60,6 +65,8 @@
     <string name="anniversary">纪念日</string>
 
     <!-- Blocked numbers -->
+    <string name="reset_default_dialer_tip">重新设置默认拨号程序</string>
+    <string name="set_default_dialer_tip">设为默认拨号程序</string>
     <string name="must_make_default_dialer">你必须将应用程序设为默认的拨号程序后才能使用黑名单。</string>
     <string name="manage_blocked_numbers">管理黑名单</string>
     <string name="not_blocking_anyone">你的黑名单为空</string>
@@ -67,6 +74,7 @@
     <string name="block_number">加入黑名单</string>
     <string name="block_numbers">加入黑名单</string>
     <string name="blocked_numbers">黑名单</string>
+    <string name="blocked_numbers_count">黑名单(%d)</string>
 
     <!--    -->
     <string name="accountSpinnerLabel">Account</string>

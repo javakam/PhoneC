@@ -2,8 +2,8 @@ package ando.guard.ui.blocked
 
 import ando.guard.R
 import ando.guard.base.BaseActivity
+import ando.guard.database.BlockedNumber
 import ando.guard.utils.BlockedContactsManager
-import ando.guard.utils.BlockedNumber
 import ando.guard.utils.hideSoftInput
 import ando.guard.utils.showKeyboard
 import android.widget.EditText

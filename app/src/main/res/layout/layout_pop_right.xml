@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <View
+        android:id="@+id/v_arrow"
+        android:layout_width="@dimen/dp_20"
+        android:layout_height="@dimen/dp_10"
+        android:layout_gravity="end"
+        android:layout_marginLeft="@dimen/dp_10"
+        android:layout_marginRight="@dimen/dp_10" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/color_container_bg"
+        android:divider="@drawable/shape_divider_horiz_bg"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:showDividers="middle">
+
+        <TextView
+            android:id="@+id/tv_reset"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_40"
+            android:layout_marginLeft="@dimen/dp_50"
+            android:layout_marginRight="@dimen/dp_50"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
+            android:text="@string/reset_default_dialer_tip"
+            android:textColor="@color/black"
+            android:textSize="@dimen/font_13" />
+
+
+    </LinearLayout>
+</LinearLayout>

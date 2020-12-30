@@ -1,6 +1,6 @@
 package ando.guard.utils
 
-import ando.guard.toastLong
+import ando.guard.common.toastLong
 import android.Manifest
 import android.os.Build
 import androidx.fragment.app.Fragment

@@ -20,11 +20,8 @@ import androidx.appcompat.app.AppCompatActivity
  */
 class PickContactActivity :AppCompatActivity(){
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-
         setContentView(R.layout.activity_main)
 
         PermissionManager.requestContactsPermission(this) {
@@ -40,7 +37,6 @@ class PickContactActivity :AppCompatActivity(){
             }
         }
     }
-
 
     private var username: String? = null
     private var usernumber: String? = null

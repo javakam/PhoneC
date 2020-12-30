@@ -63,16 +63,6 @@
         <activity android:name=".contact.ContactAdder" />
         <activity android:name=".ui.PickContactActivity" />
 
-        <!-- 命令短信拦截 -->
-        <receiver android:name=".functions.SMSAbort">
-            <intent-filter android:priority="2147483647">
-                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
-            </intent-filter>
-        </receiver>
-        <!-- 获取位置的服务 -->
-        <service android:name=".functions.LocationService" />
-        <!-- 黑名单拦截服务 -->
-        <service android:name=".functions.BlackAbortService" />
     </application>
 
 </manifest>

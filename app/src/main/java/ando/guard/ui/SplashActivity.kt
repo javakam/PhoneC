@@ -2,6 +2,7 @@ package ando.guard.ui
 
 import ando.guard.R
 import ando.guard.base.BaseMvcActivity
+import ando.guard.common.supportImmersion
 import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -23,6 +24,7 @@ import androidx.appcompat.app.AppCompatActivity
 class SplashActivity : BaseMvcActivity() {
 
     override fun getLayoutView(): View {
+        supportImmersion()
         timer.start()
         val view = FrameLayout(this)
         val textView = TextView(this)

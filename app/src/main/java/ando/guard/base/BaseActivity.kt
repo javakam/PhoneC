@@ -1,7 +1,7 @@
 package ando.guard.base
 
 import ando.guard.App.Companion.exit
-import ando.guard.toastShort
+import ando.guard.common.toastShort
 import android.R
 import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo

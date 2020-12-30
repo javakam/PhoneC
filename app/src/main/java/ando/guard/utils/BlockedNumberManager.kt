@@ -2,7 +2,8 @@ package ando.guard.utils
 
 import ando.guard.App
 import ando.guard.R
-import ando.guard.toastShort
+import ando.guard.common.toastShort
+import ando.guard.database.BlockedNumber
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.app.role.RoleManager
@@ -27,13 +28,9 @@ import androidx.appcompat.app.AppCompatActivity
  * Your app should be default dialer to use this, or it will fail with [SecurityException].
  */
 
-data class BlockedNumber(val id: Long, val number: String, val normalizedNumber: String)
-
 const val REQUEST_CODE_SET_DEFAULT_DIALER = 0x10
 
 private val context: Context = App.INSTANCE
-
-private val telecomManager: TelecomManager get() = context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager
 
 private val contentResolver: ContentResolver get() = context.contentResolver
 
@@ -41,7 +38,7 @@ object BlockedContactsManager {
 
     @TargetApi(Build.VERSION_CODES.M)
     fun isDefaultDialer() =
-        (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) && telecomManager.defaultDialerPackage == context.packageName
+        (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) && (context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager).defaultDialerPackage == context.packageName
 
     @SuppressLint("QueryPermissionsNeeded")
     @TargetApi(Build.VERSION_CODES.M)
@@ -108,7 +105,6 @@ object BlockedContactsManager {
         ThreadUtils.executeByCpu(ThreadTask({
             BlockedNumberContract.unblock(context, number)
         }, {
-
         }))
     }
 
@@ -161,8 +157,9 @@ object BlockedContactsManager {
                     do {
                         val id = c.getLongValue(BlockedNumbers.COLUMN_ID)
                         val number = c.getStringValue(BlockedNumbers.COLUMN_ORIGINAL_NUMBER) ?: ""
-                        val normalizedNumber = c.getStringValue(BlockedNumbers.COLUMN_E164_NUMBER) ?: ""
-                        val blockedNumber = BlockedNumber(id, number, normalizedNumber)
+                        val normalizedNumber =
+                            c.getStringValue(BlockedNumbers.COLUMN_E164_NUMBER) ?: ""
+                        val blockedNumber = BlockedNumber(bid = id, number, normalizedNumber)
                         blockedNumbers.add(blockedNumber)
                     } while (c.moveToNext())
                 }

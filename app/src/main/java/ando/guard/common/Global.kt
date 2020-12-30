@@ -1,8 +1,23 @@
-package ando.guard
+package ando.guard.common
 
+import ando.guard.R
+import ando.guard.utils.StatusBarUtils
+import android.app.Activity
 import android.content.Context
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+
+const val DB_BLOCKED_NUMBERS = "blockednumbers"
+
+fun Activity.supportImmersion() {
+    StatusBarUtils.setStatusBarColor(
+        window, if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            getColor(R.color.color_main_theme)
+        } else {
+            resources.getColor(R.color.color_main_theme)
+        }, 1
+    )
+}
 
 fun Context.toastShort(msg: Int) = toastShort(getString(msg))
 
@@ -22,7 +37,7 @@ fun Context.toastLong(msg: String?) {
 
 var GLOBAL_DIALOG: AlertDialog? = null
 fun showAlert(context: Context, title: String, msg: String, block: (isPositive: Boolean) -> Unit) {
-    showAlert(context, title, msg, "确定", "取消",true, block)
+    showAlert(context, title, msg, "确定", "取消", true, block)
 }
 
 fun showAlert(
@@ -31,7 +46,7 @@ fun showAlert(
     msg: String,
     positiveText: String,
     negativeText: String,
-    cancelable:Boolean,
+    cancelable: Boolean,
     block: (isPositive: Boolean) -> Unit
 ) {
     GLOBAL_DIALOG?.dismiss()
