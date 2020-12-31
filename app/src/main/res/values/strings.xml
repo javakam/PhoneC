@@ -1,5 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">AppGuard</string>
+    <string name="app_name">小宝助手</string>
+
+    <string name="flavor_blocked_numbers">@string/blocked_numbers</string>
+    <string name="flavor_bilibili">哔哩哔哩</string>
 
     <string name="ok">确认</string>
     <string name="cancel">取消</string>
@@ -51,7 +55,6 @@
     <string name="other">其它</string>
 
     <!-- Phone numbers -->
-    <string name="add_number">添加号码</string>
     <string name="number">号码</string>
     <string name="mobile">手机</string>
     <string name="main_number">主用</string>

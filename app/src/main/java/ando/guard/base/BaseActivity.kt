@@ -4,6 +4,7 @@ import ando.guard.App.Companion.exit
 import ando.guard.common.toastShort
 import android.R
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Resources
 import android.os.Bundle
@@ -29,11 +30,11 @@ abstract class BaseActivity : AppCompatActivity() {
     protected var isExit = false        //是否退出App
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        initActivityStyle()
+        initActivityConfig()
         super.onCreate(savedInstanceState)
     }
 
-    protected open fun initActivityStyle() {
+    protected open fun initActivityConfig() {
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
     }
@@ -52,6 +53,17 @@ abstract class BaseActivity : AppCompatActivity() {
             // createConfigurationContext(configuration)
         }
         return resources
+    }
+
+    protected open fun setTskRoot(){
+        if (!this.isTaskRoot) {
+            intent?.apply {
+                if (hasCategory(Intent.CATEGORY_LAUNCHER) && Intent.ACTION_MAIN == action) {
+                    finish()
+                    return
+                }
+            }
+        }
     }
 }
 

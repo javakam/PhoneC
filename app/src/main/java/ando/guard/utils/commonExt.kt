@@ -30,7 +30,6 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import java.io.*
 
-
 /**
  * Title: 扩展函数
  */
@@ -132,9 +131,30 @@ fun TextView.underlineText() {
     paintFlags = paintFlags or Paint.UNDERLINE_TEXT_FLAG
 }
 
-fun write2File(input: InputStream?, fileParentPath: String?, filePath: String?) {
-    if (fileParentPath.isNullOrBlank() || filePath.isNullOrBlank()) return
-    val targetFile = File(fileParentPath, filePath)
+fun deleteFilesButDir(file: File?, vararg excludeDirs: String?): Int {
+    var count = 0
+    if (file == null || !file.exists()) return count
+    if (file.isDirectory) {
+        val children = file.listFiles()
+        var i = 0
+        while (children != null && i < children.size) {
+            count += FileUtils.deleteFile(children[i])
+            i++
+        }
+    }
+    if (!excludeDirs.isNullOrEmpty()) {
+        excludeDirs.forEach {
+            if (it?.equals(file.name, true) == false) if (file.delete()) count++
+        }
+    } else {
+        if (file.delete()) count++
+    }
+    return count
+}
+
+fun write2File(input: InputStream?, fileParentPath: String?, fileName: String?) {
+    if (fileParentPath.isNullOrBlank() || fileName.isNullOrBlank()) return
+    val targetFile = File(fileParentPath, fileName)
     if (targetFile.exists() && targetFile.isDirectory) targetFile.delete()
     if (targetFile.parentFile?.exists() == false) {
         targetFile.parentFile?.mkdirs()
@@ -145,22 +165,23 @@ fun write2File(input: InputStream?, fileParentPath: String?, filePath: String?) 
     FileUtils.write2File(input, targetFile.absolutePath)
 }
 
-fun readAssetsDataFile(assetsFileName: String, targetFileParentPath: String?, targetFilePath: String?) {
+/**
+ * 读取 `assets` 下的 `*.db` 文件 , 原理是把`io`写入到`Android`本地目录再读取
+ *
+ * `app/src/main/assets/blockednumbers.db`
+ */
+fun readAssetsDataFile(
+    assetsFileName: String,
+    targetFileParentPath: String?,
+    targetFileName: String?
+) {
     try {
         App.INSTANCE.assets.open(assetsFileName).use {
-            write2File(it,targetFileParentPath,targetFilePath)
+            write2File(it, targetFileParentPath, targetFileName)
         }
     } catch (e: IOException) {
         e.printStackTrace()
     }
-}
-
-fun dp2px(context: Context, dpValue: Int): Int {
-    return TypedValue.applyDimension(
-        TypedValue.COMPLEX_UNIT_DIP,
-        dpValue.toFloat(),
-        context.resources.displayMetrics
-    ).toInt()
 }
 
 /**
@@ -191,6 +212,14 @@ fun getStatusBarHeight(): Int {
     val res = Resources.getSystem()
     val resourceId = res.getIdentifier("status_bar_height", "dimen", "android")
     return if (resourceId > 0) res.getDimensionPixelSize(resourceId) else 0
+}
+
+fun dp2px(context: Context, dpValue: Int): Int {
+    return TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP,
+        dpValue.toFloat(),
+        context.resources.displayMetrics
+    ).toInt()
 }
 
 /**

@@ -3,7 +3,7 @@ package ando.guard.ui.blocked
 import ando.guard.R
 import ando.guard.base.BaseActivity
 import ando.guard.database.BlockedNumber
-import ando.guard.utils.BlockedContactsManager
+import ando.guard.utils.BlockedNumbersManager
 import ando.guard.utils.hideSoftInput
 import ando.guard.utils.showKeyboard
 import android.widget.EditText
@@ -12,7 +12,7 @@ import androidx.appcompat.app.AlertDialog
 class BlockedNumberDialog(
     activity: BaseActivity,
     private val originalNumber: BlockedNumber? = null,
-    private val callback: (number:String?) -> Unit
+    private val callback: (number: String?) -> Unit
 ) {
     init {
         val view =
@@ -28,23 +28,31 @@ class BlockedNumberDialog(
         AlertDialog.Builder(activity)
             .setView(view)
             .setCancelable(true)
+            .setNeutralButton(
+                "移出黑名单"
+            ) { dialog, _ ->
+                dialog.dismiss()
+                activity.hideSoftInput(activity)
+                callback.invoke("delete")
+            }
             .setPositiveButton(
                 R.string.ok
             ) { dialog, _ ->
+                dialog.dismiss()
+                activity.hideSoftInput(activity)
+
                 val newBlockedNumber = editText.text.toString()
                 if (originalNumber != null && newBlockedNumber != originalNumber.number) {
-                    BlockedContactsManager.deleteBlockedNumber(originalNumber.number)
+                    BlockedNumbersManager.deleteBlockedNumber(originalNumber.number)
                 }
                 if (newBlockedNumber.isNotEmpty()) {
-                    BlockedContactsManager.addBlockedNumber(newBlockedNumber)
+                    BlockedNumbersManager.addBlockedNumber(newBlockedNumber)
                 }
                 callback.invoke(newBlockedNumber)
-                activity.hideSoftInput(activity)
-                dialog.dismiss()
             }
             .setNegativeButton(R.string.cancel) { dialog, _ ->
-                activity.hideSoftInput(activity)
                 dialog.dismiss()
+                activity.hideSoftInput(activity)
             }
             .create()
             .show()

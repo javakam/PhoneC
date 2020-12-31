@@ -11,7 +11,8 @@ import android.widget.Button
 class MainActivity : BaseMvcActivity() {
 
     private lateinit var mBtContacts: Button
-    private lateinit var mBtBlockedNumbers: Button
+    private lateinit var mBtFlavorBilibili: Button
+    private lateinit var mBtFlavorBlockedNumbers: Button
 
     override fun getLayoutId(): Int = R.layout.activity_main
 
@@ -21,18 +22,29 @@ class MainActivity : BaseMvcActivity() {
         PermissionManager.requestContactsPermission(this)
 
         mBtContacts = findViewById(R.id.bt_contacts)
-        mBtBlockedNumbers = findViewById(R.id.bt_blocked_numbers)
+        mBtFlavorBlockedNumbers = findViewById(R.id.bt_blocked_numbers)
+        mBtFlavorBilibili = findViewById(R.id.bt_bilibili)
+
+    }
+
+    override fun initListener() {
 
         mBtContacts.setOnClickListener {
             PermissionManager.requestContactsPermission(this) {
                 if (it) AppRouter.toContactManagerActivity(this)
             }
         }
-        mBtBlockedNumbers.setOnClickListener {
+
+        mBtFlavorBlockedNumbers.setOnClickListener {
             PermissionManager.requestContactsPermission(this) {
                 if (it) AppRouter.toBlockedNumbersActivity(this)
             }
         }
+
+        mBtFlavorBilibili.setOnClickListener {
+
+        }
+
     }
 
 }

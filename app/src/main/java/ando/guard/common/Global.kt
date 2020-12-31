@@ -7,7 +7,7 @@ import android.content.Context
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 
-const val DB_BLOCKED_NUMBERS = "blockednumbers"
+const val FILE_BLOCKED_NUMBERS = "blockednumbers"
 
 fun Activity.supportImmersion() {
     StatusBarUtils.setStatusBarColor(

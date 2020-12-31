@@ -2,14 +2,14 @@ package ando.guard.ui.blocked
 
 import ando.guard.R
 import ando.guard.base.BaseMvcActivity
-import ando.guard.common.DB_BLOCKED_NUMBERS
 import ando.guard.common.showAlert
 import ando.guard.common.supportImmersion
-import ando.guard.database.BlackNumberDao
 import ando.guard.database.BlockedNumber
-import ando.guard.database.DatabaseManager
+import ando.guard.database.DataSourceManager
+import ando.guard.database.DataSourceManager.loadBlockedNumbersFromJson
 import ando.guard.utils.*
-import ando.guard.utils.BlockedContactsManager.isDefaultDialer
+import ando.guard.utils.BlockedNumbersManager.REQUEST_CODE_SET_DEFAULT_DIALER
+import ando.guard.utils.BlockedNumbersManager.isDefaultDialer
 import ando.guard.views.BaseRecyclerAdapter
 import ando.guard.views.BaseViewHolder
 import ando.guard.views.popup.TriangleDrawable
@@ -26,11 +26,13 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import java.io.File
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.util.*
 
 class BlockedNumbersActivity : BaseMvcActivity() {
 
+    private val mIvBack: ImageView by lazy { findViewById(R.id.iv_back) }
     private val mTvTitle: TextView by lazy { findViewById(R.id.tv_title) }
     private val mTvEdit: TextView by lazy { findViewById(R.id.tv_edit) }
     private val mIvAdd: ImageView by lazy { findViewById(R.id.iv_add) }
@@ -47,18 +49,10 @@ class BlockedNumbersActivity : BaseMvcActivity() {
         supportImmersion()
         mTvTitle.text = getString(R.string.blocked_numbers)
         mTvEdit.text = getString(R.string.edit)
+        mTvEdit.gone()
+        mIvMore.gone()
 
-        DatabaseManager.useBlockedNumbers()
-        val dbPath = "$DB_BLOCKED_NUMBERS.db"
-        val dbFile = File("${externalCacheDir}/${getString(R.string.blocked_numbers)}", dbPath)
-        Log.e("123", "dbFile = ${dbFile.exists()}")
-        if (!dbFile.exists()) {
-            readAssetsDataFile(
-                assetsFileName = dbPath,
-                targetFileParentPath = "${externalCacheDir}/${getString(R.string.blocked_numbers)}",
-                targetFilePath = dbPath
-            )
-        }
+        DataSourceManager.useBlockedNumbers()
 
         if (!isDefaultDialer()) {
             showSetDefaultDialer()
@@ -82,6 +76,22 @@ class BlockedNumbersActivity : BaseMvcActivity() {
             })
             mRecyclerView.adapter = mAdapter
             reloadData()
+
+            Log.e(
+                "123",
+                "isBlockedNumbersFileJsonExist=${DataSourceManager.isBlockedNumbersFileJsonExist()}"
+            )
+            if (!DataSourceManager.isBlockedNumbersFileJsonExist()) {
+                loadBlockedNumbersFromJson().apply {
+                    if (isNotEmpty()) {
+                        forEach { n: BlockedNumber ->
+                            BlockedNumbersManager.addBlockedNumber(n.number)
+                        }
+                        reloadData()
+                        DataSourceManager.removeBlockedNumbersFileJson()
+                    }
+                }
+            } else reloadData()
         }
     }
 
@@ -94,8 +104,9 @@ class BlockedNumbersActivity : BaseMvcActivity() {
     }
 
     override fun initListener() {
+        mIvBack.setOnClickListener { finish() }
         mTvTitle.setOnLongClickListener {
-            DatabaseManager.deleteBlockedNumbers()
+            DataSourceManager.deleteBlockedNumbers()
             true
         }
         mTvEdit.setOnClickListener {
@@ -106,29 +117,52 @@ class BlockedNumbersActivity : BaseMvcActivity() {
             showEditBlockedNumberDialog()
         }
         mIvMore.setOnClickListener {
-            TODO()
             //showResetDefaultDialer()
         }
     }
 
     override fun onDestroy() {
-        DatabaseManager.useDefault()
         super.onDestroy()
+        DataSourceManager.useDefault()
     }
 
     private fun reloadData() {
-        ThreadUtils.executeByCpu(ThreadTask({
-            BlockedContactsManager.getBlockedNumbers().asReversed()
+        ThreadUtils.executeByCached(ThreadTask({
+            /*
+            todo 2020年12月31日17:08:41
+
+I/Choreographer: Skipped 97 frames!  The application may be doing too much work on its main thread.
+
+I/OpenGLRenderer: Davey! duration=1590ms; Flags=1, IntendedVsync=69462718327689,
+Vsync=69464282843793, OldestInputEvent=9223372036854775807, NewestInputEvent=0,
+HandleInputStart=69464283743968, AnimationStart=69464283786000,
+PerformTraversalsStart=69464284336312, DrawStart=69464299854802, SyncQueued=69464301261729,
+SyncStart=69464301530270, IssueDrawCommandsStart=69464301572510, SwapBuffers=69464308538291,
+FrameCompleted=69464309077458, DequeueBufferDuration=74000, QueueBufferDuration=273000,
+
+I/OpenGLRenderer: Davey! duration=1592ms; Flags=1, IntendedVsync=69462718327689,
+Vsync=69464282843793, OldestInputEvent=9223372036854775807, NewestInputEvent=0,
+HandleInputStart=69464283743968, AnimationStart=69464283786000,
+PerformTraversalsStart=69464284336312, DrawStart=69464309547510, SyncQueued=69464309594958,
+SyncStart=69464309818031, IssueDrawCommandsStart=69464309850583, SwapBuffers=69464310332718,
+FrameCompleted=69464310699281, DequeueBufferDuration=67000, QueueBufferDuration=153000,
+             */
+            Log.w("123", "Thread111 =${Thread.currentThread()}")
+            BlockedNumbersManager.getBlockedNumbers()
         }, {
+            Log.w("123", "Thread222 =${Thread.currentThread()}")
+
             mAdapter.refresh(it)
             if (!it.isNullOrEmpty()) {
                 //统计
-                //BlackNumberDao.saveAll(it) {}
-                Log.e("123", "reloadData =")
+                //DataSourceManager.cacheBlockedNumbers2DB(it){}
+                //val isSaved: Boolean = DataSourceManager.cacheBlockedNumbers2Json(it)
+                //Log.e("123", "isSaved $isSaved reloadData = ${BlockedNumberDao.queryTotalCount()}")
+
                 mTvTitle.text = String.format(
                     Locale.getDefault(),
                     getString(R.string.blocked_numbers_count),
-                    BlackNumberDao.queryTotalCount()
+                    it.size
                 )
 
                 mAdapter.setOnItemClickListener(object : XRecyclerAdapter.OnItemClickListener {
@@ -150,7 +184,7 @@ class BlockedNumbersActivity : BaseMvcActivity() {
             false
         ) {
             if (it) {
-                BlockedContactsManager.launchSetDefaultDialerIntent(this)
+                BlockedNumbersManager.launchSetDefaultDialerIntent(this)
             } else finish()
         }
     }
@@ -159,7 +193,7 @@ class BlockedNumbersActivity : BaseMvcActivity() {
     private val mMorePopup: EasyPopup by lazy {
         EasyPopup.create()
             .setContext(this)
-            .setContentView(R.layout.layout_pop_right)
+            .setContentView(R.layout.layout_blocked_number_pop)
             .setAnimationStyle(R.style.RightTop2PopAnim)
             .setOnViewListener { view, popup ->
                 val arrowView = view.findViewById<View>(R.id.v_arrow)
@@ -171,7 +205,7 @@ class BlockedNumbersActivity : BaseMvcActivity() {
                 val resetDefaultDialerView = view.findViewById<TextView>(R.id.tv_reset)
                 resetDefaultDialerView.setOnClickListener {
                     popup?.dismiss()
-                    BlockedContactsManager.launchSetDefaultDialerIntent(this)
+                    BlockedNumbersManager.launchSetDefaultDialerIntent(this)
                 }
             }
             .setFocusAndOutsideEnable(true)
@@ -197,14 +231,19 @@ class BlockedNumbersActivity : BaseMvcActivity() {
     private fun showEditBlockedNumberDialog(originalNumber: BlockedNumber? = null) {
         BlockedNumberDialog(this, originalNumber) {
             Log.e("123", "showEditBlockedNumberDialog: $it")
+            if (originalNumber != null && it?.equals("delete", true) == true) {
+                BlockedNumbersManager.deleteBlockedNumber(originalNumber.number)
+            }
             reloadData()
         }
     }
 
     inner class BlockedNumbersAdapter : BaseRecyclerAdapter<BlockedNumber>() {
-        override fun getLayoutId(viewType: Int): Int = R.layout.item_manage_blocked_number
+        override fun getLayoutId(viewType: Int): Int = R.layout.item_blocked_number
         override fun bindData(holder: BaseViewHolder, position: Int, item: BlockedNumber) {
-            holder.setText(R.id.tv_manage_blocked_number_title, item.number)
+            holder.setText(R.id.tv_blocked_number, item.number)
+            //holder.setVisible(R.id.checkbox_blocked_number, isEditMode)
+            //holder.setChecked(R.id.checkbox_blocked_number, isEditMode)
         }
     }
 

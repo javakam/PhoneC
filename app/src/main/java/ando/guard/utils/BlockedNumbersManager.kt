@@ -27,14 +27,12 @@ import androidx.appcompat.app.AppCompatActivity
  *
  * Your app should be default dialer to use this, or it will fail with [SecurityException].
  */
+object BlockedNumbersManager {
 
-const val REQUEST_CODE_SET_DEFAULT_DIALER = 0x10
+    const val REQUEST_CODE_SET_DEFAULT_DIALER = 0x10
 
-private val context: Context = App.INSTANCE
-
-private val contentResolver: ContentResolver get() = context.contentResolver
-
-object BlockedContactsManager {
+    private val context: Context = App.INSTANCE
+    private val contentResolver: ContentResolver get() = context.contentResolver
 
     @TargetApi(Build.VERSION_CODES.M)
     fun isDefaultDialer() =
@@ -70,15 +68,12 @@ object BlockedContactsManager {
 
     @TargetApi(Build.VERSION_CODES.N)
     fun addBlockedNumber(number: String) {
-        //检查当前用户是否支持阻止号码。通常，一次仅支持一个用户使用阻止号码。
-        if (!BlockedNumberContract.canCurrentUserBlockNumbers(context)) return
-
         ContentValues().apply {
             put(BlockedNumbers.COLUMN_ORIGINAL_NUMBER, number)
             try {
                 contentResolver.insert(BlockedNumbers.CONTENT_URI, this)
             } catch (e: Exception) {
-                //
+                e.printStackTrace()
             }
         }
     }
@@ -88,8 +83,6 @@ object BlockedContactsManager {
 
     @TargetApi(Build.VERSION_CODES.N)
     fun deleteBlockedNumber(number: String) {
-        if (!BlockedNumberContract.canCurrentUserBlockNumbers(context)) return
-
         val values = ContentValues()
         values.put(BlockedNumbers.COLUMN_ORIGINAL_NUMBER, number)
         contentResolver.insert(BlockedNumbers.CONTENT_URI, values)?.let { u: Uri ->
@@ -99,6 +92,7 @@ object BlockedContactsManager {
 
     @RequiresApi(Build.VERSION_CODES.N)
     private fun unblockBlockedNumbers(number: String) {
+        //检查当前用户是否支持阻止号码。通常，一次仅支持一个用户使用阻止号码。
         if (!BlockedNumberContract.canCurrentUserBlockNumbers(context)) return
         if (!BlockedNumberContract.isBlocked(context, number)) return
 
@@ -117,8 +111,6 @@ object BlockedContactsManager {
      */
     @RequiresApi(Build.VERSION_CODES.N)
     fun getBlockedNumbersSimplify(onError: (Exception) -> Unit? = {}): List<String> {
-        if (!BlockedNumberContract.canCurrentUserBlockNumbers(context)) return emptyList()
-
         return try {
             context.contentResolver.query(
                 BlockedNumbers.CONTENT_URI,
@@ -140,8 +132,6 @@ object BlockedContactsManager {
 
     @TargetApi(Build.VERSION_CODES.N)
     fun getBlockedNumbers(onError: (Exception) -> Unit? = {}): List<BlockedNumber> {
-        if (!BlockedNumberContract.canCurrentUserBlockNumbers(context)) return emptyList()
-
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N || !isDefaultDialer()) return emptyList()
 
         try {

@@ -10,7 +10,7 @@ import java.util.*
 
 data class BlockedNumber(val bid: Long = 0L, val number: String, val normalizedNumber: String)
 
-class BlackNumberModel : LitePalSupport() {
+class BlockedNumberModel : LitePalSupport() {
     //避免和 id 字段冲突
     @Column(unique = true, nullable = false)
     var number: String? = null
@@ -18,17 +18,17 @@ class BlackNumberModel : LitePalSupport() {
     var updateData: Date? = null
 }
 
-fun BlockedNumber.toModel(): BlackNumberModel = BlackNumberModel().let {
+fun BlockedNumber.toModel(): BlockedNumberModel = BlockedNumberModel().let {
     it.number = number
     it.normalizedNumber = normalizedNumber
     it.updateData = Date()
     return it
 }
 
-fun BlackNumberModel.toBlockNumber(): BlockedNumber =
+fun BlockedNumberModel.toBlockNumber(): BlockedNumber =
     BlockedNumber(number = number.noNull(), normalizedNumber = normalizedNumber.noNull())
 
-object BlackNumberDao {
+object BlockedNumberDao {
 
     fun saveAll(blockedNumbers: List<BlockedNumber>?, callback: ((Boolean) -> Unit)?) {
         if (blockedNumbers.isNullOrEmpty()) return
@@ -48,16 +48,16 @@ object BlackNumberDao {
         normalizedNumber: String?
     ): Boolean {
         if (bid < 0 || number.isNullOrBlank() || normalizedNumber.isNullOrBlank()) return false
-        val model: BlackNumberModel? =
+        val model: BlockedNumberModel? =
             LitePal.where("bid = ? and number = ?", bid.toString(), number)
-                ?.findFirst(BlackNumberModel::class.java)
+                ?.findFirst(BlockedNumberModel::class.java)
 
         if (model != null && model.isSaved) {
             model.updateData = Date()
             return model.saveOrUpdate()
         }
 
-        val newModel = BlackNumberModel()
+        val newModel = BlockedNumberModel()
         newModel.number = number
         newModel.normalizedNumber = normalizedNumber
         newModel.updateData = Date()
@@ -71,7 +71,7 @@ object BlackNumberDao {
      * @return true为存在，false为不存在
      */
     fun queryNumber(number: String?): Boolean = number?.run {
-        LitePal.where(" number = ? ", number)?.findFirst(BlackNumberModel::class.java)?.isSaved
+        LitePal.where(" number = ? ", number)?.findFirst(BlockedNumberModel::class.java)?.isSaved
     } ?: false
 
     /**
@@ -79,11 +79,11 @@ object BlackNumberDao {
      *
      * @param number 黑名单号码
      */
-    fun delete(number: String?): Boolean {
-        if (number.isNullOrBlank()) return false
+    fun delete(number: String?): Int {
+        if (number.isNullOrBlank()) return 0
         return LitePal.where(" number = ? ", number)
-            .findFirst(BlackNumberModel::class.java)
-            ?.delete() ?: 0 > 0
+            .findFirst(BlockedNumberModel::class.java)
+            ?.delete() ?: 0
     }
 
     /**
@@ -91,28 +91,28 @@ object BlackNumberDao {
      *
      * @return 黑名单的总数
      */
-    fun queryTotalCount(): Int = LitePal.count(BlackNumberModel::class.java)
+    fun queryTotalCount(): Int = LitePal.count(BlockedNumberModel::class.java)
 
     /**
      * 查询全部的黑名单信息
      *
      * @return 返回保存全部黑名单信息的 List
      */
-    private fun queryAll(): List<BlackNumberModel>? =
-        LitePal.where("number not null")?.order("updateData")
-            ?.find(BlackNumberModel::class.java)
+    private fun queryAll(): List<BlockedNumberModel>? =LitePal.findAll(BlockedNumberModel::class.java)
+//        LitePal.where("number is not null ")?.order("updateData")
+//            ?.find(BlockedNumberModel::class.java)
 
-    private fun queryAllAsync(callback: ((List<BlockedNumber>?) -> Unit)?) {
+    fun queryAllAsync(callback: ((List<BlockedNumber>) -> Unit)?) {
         ThreadUtils.executeByCpu(ThreadTask({
             queryAll()
-        }, { l: List<BlackNumberModel>? ->
+        }, { l: List<BlockedNumberModel>? ->
             l?.apply {
-                callback?.invoke(map { m: BlackNumberModel -> m.toBlockNumber() })
+                callback?.invoke(map { m: BlockedNumberModel -> m.toBlockNumber() })
             }
         }))
     }
 
     fun deleteAll(): Boolean {
-        return LitePal.deleteAll(BlackNumberModel::class.java) > 0
+        return LitePal.deleteAll(BlockedNumberModel::class.java) > 0
     }
 }

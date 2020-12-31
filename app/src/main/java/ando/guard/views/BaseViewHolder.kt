@@ -260,6 +260,8 @@ class BaseViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         // View unable cast to Checkable
         if (view is CompoundButton) {
             view.isChecked = checked
+        } else if (view is CheckBox) {
+            view.isChecked = checked
         } else if (view is CheckedTextView) {
             view.isChecked = checked
         }
