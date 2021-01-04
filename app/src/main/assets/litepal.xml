@@ -32,7 +32,7 @@
     	</list>
     -->
     <list>
-        <!--  <mapping class="ando.guard.database.BlockedNumberModel" />-->
+        <!--  <mapping class="ando.guard.block.db.BlockedNumberModel" />-->
     </list>
 
     <!--

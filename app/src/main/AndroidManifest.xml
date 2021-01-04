@@ -43,7 +43,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.MainActivity" />
-        <activity android:name=".ui.blocked.BlockedNumbersActivity" >
+        <activity android:name=".block.ui.BlockedNumbersActivity" >
             <!-- 提供打电话的UI -->
             <intent-filter>
                 <action android:name="android.intent.action.DIAL"/>

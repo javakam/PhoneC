@@ -1,9 +1,13 @@
-package ando.guard.utils
+package ando.guard.block
 
 import ando.guard.App
 import ando.guard.R
 import ando.guard.common.toastShort
-import ando.guard.database.BlockedNumber
+import ando.guard.block.db.BlockedNumber
+import ando.guard.utils.ThreadTask
+import ando.guard.utils.ThreadUtils
+import ando.guard.utils.getLongValue
+import ando.guard.utils.getStringValue
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.app.role.RoleManager
@@ -27,7 +31,7 @@ import androidx.appcompat.app.AppCompatActivity
  *
  * Your app should be default dialer to use this, or it will fail with [SecurityException].
  */
-object BlockedNumbersManager {
+object BlockedNumbersUtils {
 
     const val REQUEST_CODE_SET_DEFAULT_DIALER = 0x10
 

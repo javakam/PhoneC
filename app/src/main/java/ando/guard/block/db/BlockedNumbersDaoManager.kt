@@ -1,4 +1,4 @@
-package ando.guard.database
+package ando.guard.block.db
 
 import ando.guard.App
 import ando.guard.R
@@ -11,15 +11,7 @@ import org.litepal.LitePal.use
 import org.litepal.LitePalDB
 import java.io.File
 
-/**
- * Title: DatabaseManager
- *
- * Description:
- *
- * @author javakam
- * @date 2020/12/30  14:01
- */
-object DataSourceManager {
+object BlockedNumbersDaoManager {
 
     private val globalBlockedNumbersFileParentPath: String by lazy {
         val context = App.INSTANCE

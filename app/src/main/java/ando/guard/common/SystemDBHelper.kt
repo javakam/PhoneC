@@ -1,6 +1,6 @@
-package ando.guard.database
+package ando.guard.common
 
-import ando.guard.database.DataSourceManager.loadBlockedNumbersFromDB
+import ando.guard.block.db.BlockedNumbersDaoManager.loadBlockedNumbersFromDB
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import java.io.File
@@ -50,6 +50,5 @@ object SystemDBHelper {
     private fun getInt(cursor: Cursor, columnName: String): Int {
         return cursor.getInt(cursor.getColumnIndex(columnName))
     }
-
 
 }

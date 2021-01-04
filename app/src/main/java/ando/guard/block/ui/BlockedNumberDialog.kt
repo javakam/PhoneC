@@ -1,9 +1,9 @@
-package ando.guard.ui.blocked
+package ando.guard.block.ui
 
 import ando.guard.R
 import ando.guard.base.BaseActivity
-import ando.guard.database.BlockedNumber
-import ando.guard.utils.BlockedNumbersManager
+import ando.guard.block.db.BlockedNumber
+import ando.guard.block.BlockedNumbersUtils
 import ando.guard.utils.hideSoftInput
 import ando.guard.utils.showKeyboard
 import android.widget.EditText
@@ -43,10 +43,10 @@ class BlockedNumberDialog(
 
                 val newBlockedNumber = editText.text.toString()
                 if (originalNumber != null && newBlockedNumber != originalNumber.number) {
-                    BlockedNumbersManager.deleteBlockedNumber(originalNumber.number)
+                    BlockedNumbersUtils.deleteBlockedNumber(originalNumber.number)
                 }
                 if (newBlockedNumber.isNotEmpty()) {
-                    BlockedNumbersManager.addBlockedNumber(newBlockedNumber)
+                    BlockedNumbersUtils.addBlockedNumber(newBlockedNumber)
                 }
                 callback.invoke(newBlockedNumber)
             }

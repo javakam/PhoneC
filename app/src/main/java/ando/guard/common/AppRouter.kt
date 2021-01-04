@@ -2,7 +2,7 @@ package ando.guard.common
 
 import ando.guard.base.BaseActivity
 import ando.guard.contact.ContactManager
-import ando.guard.ui.blocked.BlockedNumbersActivity
+import ando.guard.block.ui.BlockedNumbersActivity
 import android.content.Intent
 
 /**

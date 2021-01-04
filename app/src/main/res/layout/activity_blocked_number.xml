@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/color_container_gray"
     android:orientation="vertical"
-    tools:context=".ui.blocked.BlockedNumbersActivity">
+    tools:context=".block.ui.BlockedNumbersActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
