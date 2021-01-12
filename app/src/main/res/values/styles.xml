@@ -23,4 +23,8 @@
         <item name="android:windowExitAnimation">@anim/right_top_out</item>
     </style>
 
+    <!-- 加载中弹窗宽高 -->
+    <dimen name="dimen_dialog_loading_width">@dimen/dp_190</dimen>
+    <dimen name="dimen_dialog_loading_height">@dimen/dp_118</dimen>
+
 </resources>

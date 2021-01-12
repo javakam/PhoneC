@@ -52,7 +52,7 @@ class BlockedNumbersDatabaseWorker(
                         forEach { n: BlockedNumber ->
                             BlockedNumbersUtils.addBlockedNumber(n.number)
                         }
-                        BlockedNumbersDaoManager.removeBlockedNumbersFileJson()
+                        //BlockedNumbersDaoManager.removeBlockedNumbersFileJson()
                         buildResult("ok", true)
                     } else buildResult("load from json file failed", false)
                 }

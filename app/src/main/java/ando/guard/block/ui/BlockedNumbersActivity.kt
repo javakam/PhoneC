@@ -1,5 +1,6 @@
 package ando.guard.block.ui
 
+import ando.dialog.core.DialogManager
 import ando.guard.R
 import ando.guard.base.BaseMvcActivity
 import ando.guard.block.BlockedNumbersUtils
@@ -7,11 +8,9 @@ import ando.guard.block.db.BlockedNumber
 import ando.guard.block.db.BlockedNumbersDaoManager
 import ando.guard.common.showAlert
 import ando.guard.common.supportImmersion
-import ando.guard.block.db.BlockedNumbersDaoManager.loadBlockedNumbersFromJson
 import ando.guard.utils.*
 import ando.guard.block.BlockedNumbersUtils.REQUEST_CODE_SET_DEFAULT_DIALER
 import ando.guard.block.BlockedNumbersUtils.isDefaultDialer
-import ando.guard.block.work.BlockedNumbersDatabaseWorker
 import ando.guard.block.work.proceedBlockedNumbersWork
 import ando.guard.views.BaseRecyclerAdapter
 import ando.guard.views.BaseViewHolder
@@ -23,17 +22,12 @@ import ando.guard.views.popup.YGravity
 import android.content.Intent
 import android.graphics.Rect
 import android.os.Bundle
-import android.os.SystemClock
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkInfo
-import androidx.work.WorkManager
 import java.util.*
 
 class BlockedNumbersActivity : BaseMvcActivity() {
@@ -82,11 +76,26 @@ class BlockedNumbersActivity : BaseMvcActivity() {
             })
             mRecyclerView.adapter = mAdapter
 
+            showLoadingDialog(getString(R.string.str_dialog_loading))
             proceedBlockedNumbersWork(this) {
                 reloadData()
+                DialogManager.dismiss()
             }
-
         }
+    }
+
+    private fun showLoadingDialog(@Suppress("SameParameterValue") text: String) {
+        val width = resources.getDimensionPixelSize(R.dimen.dimen_dialog_loading_width)
+        val height = resources.getDimensionPixelSize(R.dimen.dimen_dialog_loading_height)
+        DialogManager.with(this, R.style.AndoLoadingDialog)
+            .setContentView(R.layout.layout_ando_dialog_loading) { v ->
+                v.findViewById<View>(R.id.progressbar_ando_dialog_loading).visibility = View.VISIBLE
+                v.findViewById<TextView>(R.id.tv_ando_dialog_loading_text).text = text
+            }
+            .setSize(width, height)
+            .setCancelable(true)
+            .setCanceledOnTouchOutside(false)
+            .show()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
@@ -117,6 +126,7 @@ class BlockedNumbersActivity : BaseMvcActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        DialogManager.dismiss()
         BlockedNumbersDaoManager.useDefault()
     }
 
