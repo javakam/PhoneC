@@ -1,6 +1,6 @@
 package ando.guard.common
 
-import ando.guard.block.db.BlockedNumbersDaoManager.loadBlockedNumbersFromDB
+import ando.guard.block.BlockedNumbersDataManager.loadFromDB
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import java.io.File
@@ -17,7 +17,7 @@ object SystemDBHelper {
 
     var mDB: SQLiteDatabase? = null
 
-    private val dbFile: File by lazy { loadBlockedNumbersFromDB() }
+    private val dbFile: File by lazy { loadFromDB() }
 
     /**
      * 打开数据库

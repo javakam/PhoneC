@@ -1,5 +1,6 @@
 package ando.guard
 
+import ando.file.FileOperator
 import android.app.Activity
 import android.app.Application
 import android.content.Intent
@@ -44,6 +45,7 @@ class App : Application() {
 
         LitePal.initialize(this)
 
+        FileOperator.init(this, BuildConfig.DEBUG)
     }
 
     /**

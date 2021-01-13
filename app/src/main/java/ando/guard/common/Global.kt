@@ -1,9 +1,12 @@
 package ando.guard.common
 
+import ando.dialog.core.DialogManager
 import ando.guard.R
 import ando.guard.utils.StatusBarUtils
 import android.app.Activity
 import android.content.Context
+import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 
@@ -63,4 +66,22 @@ fun showAlert(
         .create()
 
     GLOBAL_DIALOG?.show()
+}
+
+
+fun showLoadingDialog(context: Context, stringResId: Int = R.string.str_dialog_loading) =
+    showLoadingDialog(context, context.getString(stringResId))
+
+fun showLoadingDialog(context: Context, text: String) {
+    val width = context.resources.getDimensionPixelSize(R.dimen.dimen_dialog_loading_width)
+    val height = context.resources.getDimensionPixelSize(R.dimen.dimen_dialog_loading_height)
+    DialogManager.with(context, R.style.CustomLoadingDialog)
+        .setContentView(R.layout.layout_ando_dialog_loading) { v ->
+            v.findViewById<View>(R.id.progressbar_ando_dialog_loading).visibility = View.VISIBLE
+            v.findViewById<TextView>(R.id.tv_ando_dialog_loading_text).text = text
+        }
+        .setSize(width, height)
+        .setCancelable(true)
+        .setCanceledOnTouchOutside(false)
+        .show()
 }

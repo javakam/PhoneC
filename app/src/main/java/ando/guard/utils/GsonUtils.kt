@@ -40,6 +40,9 @@ object GsonUtils {
         return Gson().fromJson(json, T::class.java)
     }
 
+    /**
+     * String -> List
+     */
     @Throws(JsonSyntaxException::class)
     fun <T> fromJson(json: String?, typeOfT: Type): T = createGson().fromJson(json, typeOfT)
 

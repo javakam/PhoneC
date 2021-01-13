@@ -1,9 +1,8 @@
-package ando.guard.block.work
+package ando.guard.block
 
+import ando.guard.BuildConfig
 import ando.guard.base.BaseActivity
-import ando.guard.block.BlockedNumbersUtils
 import ando.guard.block.db.BlockedNumber
-import ando.guard.block.db.BlockedNumbersDaoManager
 import android.content.Context
 import android.util.Log
 import androidx.work.*
@@ -23,7 +22,7 @@ fun proceedBlockedNumbersWork(activity: BaseActivity, callBack: () -> Unit) {
                 //val resultValue: String = it.outputData.getString(WORK_KEY_BLOCK) ?: ""
                 callBack.invoke()
             } else {
-                Log.e("123", it.outputData.getString(WORK_KEY_BLOCK) ?: "")
+                Log.e("123", "Result: ${it.outputData.getString(WORK_KEY_BLOCK)}")
             }
         })
 
@@ -35,23 +34,26 @@ fun proceedBlockedNumbersWork(activity: BaseActivity, callBack: () -> Unit) {
  *
  * https://blog.csdn.net/yingaizhu/article/details/105392459
  */
-class BlockedNumbersDatabaseWorker(
+internal class BlockedNumbersDatabaseWorker(
     context: Context,
     workerParams: WorkerParameters
 ) : CoroutineWorker(context, workerParams) {
     override suspend fun doWork(): Result = coroutineScope {
         try {
-            val isJsonFileExist = BlockedNumbersDaoManager.isBlockedNumbersFileJsonExist()
-            Log.e(
-                "123", "Thread111 =${Thread.currentThread()} isJsonFileExist=$isJsonFileExist"
-            )
+            val isJsonFileExist = BlockedNumbersDataManager.isFileJsonExist()
+            if (BuildConfig.DEBUG) {
+                Log.e(
+                    "123", "Thread= ${Thread.currentThread()} isJsonFileExist= $isJsonFileExist"
+                )
+            }
 
             if (!isJsonFileExist) {
-                BlockedNumbersDaoManager.loadBlockedNumbersFromJson().run {
+                BlockedNumbersDataManager.loadFromJson().run {
                     if (isNotEmpty()) {
                         forEach { n: BlockedNumber ->
                             BlockedNumbersUtils.addBlockedNumber(n.number)
                         }
+                        BlockedNumbersDataManager.cacheToJson(this)
                         //BlockedNumbersDaoManager.removeBlockedNumbersFileJson()
                         buildResult("ok", true)
                     } else buildResult("load from json file failed", false)

@@ -1,17 +1,24 @@
 package ando.guard.block.ui
 
 import ando.dialog.core.DialogManager
+import ando.file.core.FileMimeType
+import ando.file.core.FileOpener
+import ando.file.core.FileUri
+import ando.file.selector.FileSelectCallBack
+import ando.file.selector.FileSelectResult
+import ando.file.selector.FileSelector
 import ando.guard.R
 import ando.guard.base.BaseMvcActivity
 import ando.guard.block.BlockedNumbersUtils
 import ando.guard.block.db.BlockedNumber
-import ando.guard.block.db.BlockedNumbersDaoManager
+import ando.guard.block.BlockedNumbersDataManager
 import ando.guard.common.showAlert
 import ando.guard.common.supportImmersion
 import ando.guard.utils.*
 import ando.guard.block.BlockedNumbersUtils.REQUEST_CODE_SET_DEFAULT_DIALER
 import ando.guard.block.BlockedNumbersUtils.isDefaultDialer
-import ando.guard.block.work.proceedBlockedNumbersWork
+import ando.guard.block.proceedBlockedNumbersWork
+import ando.guard.common.showLoadingDialog
 import ando.guard.views.BaseRecyclerAdapter
 import ando.guard.views.BaseViewHolder
 import ando.guard.views.XRecyclerAdapter
@@ -21,6 +28,7 @@ import ando.guard.views.popup.XGravity
 import ando.guard.views.popup.YGravity
 import android.content.Intent
 import android.graphics.Rect
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -43,6 +51,8 @@ class BlockedNumbersActivity : BaseMvcActivity() {
     private var isEditMode: Boolean = false
     private val mAdapter: BlockedNumbersAdapter by lazy { BlockedNumbersAdapter() }
 
+    private var mFileSelector: FileSelector? = null
+
     override fun getLayoutId(): Int = R.layout.activity_blocked_number
 
     override fun initView(savedInstanceState: Bundle?) {
@@ -50,9 +60,8 @@ class BlockedNumbersActivity : BaseMvcActivity() {
         mTvTitle.text = getString(R.string.blocked_numbers)
         mTvEdit.text = getString(R.string.edit)
         mTvEdit.gone()
-        mIvMore.gone()
 
-        BlockedNumbersDaoManager.useBlockedNumbers()
+        BlockedNumbersDataManager.useBlockedNumbersDB()
 
         if (!isDefaultDialer()) {
             showSetDefaultDialer()
@@ -76,31 +85,21 @@ class BlockedNumbersActivity : BaseMvcActivity() {
             })
             mRecyclerView.adapter = mAdapter
 
-            showLoadingDialog(getString(R.string.str_dialog_loading))
+            showLoadingDialog(this)
             proceedBlockedNumbersWork(this) {
-                reloadData()
-                DialogManager.dismiss()
+                //延迟500毫秒, 显示效果好一点(#^.^#)
+                doAsyncDelay({
+                    reloadData()
+                    DialogManager.dismiss()
+                }, 500L)
             }
         }
-    }
-
-    private fun showLoadingDialog(@Suppress("SameParameterValue") text: String) {
-        val width = resources.getDimensionPixelSize(R.dimen.dimen_dialog_loading_width)
-        val height = resources.getDimensionPixelSize(R.dimen.dimen_dialog_loading_height)
-        DialogManager.with(this, R.style.AndoLoadingDialog)
-            .setContentView(R.layout.layout_ando_dialog_loading) { v ->
-                v.findViewById<View>(R.id.progressbar_ando_dialog_loading).visibility = View.VISIBLE
-                v.findViewById<TextView>(R.id.tv_ando_dialog_loading_text).text = text
-            }
-            .setSize(width, height)
-            .setCancelable(true)
-            .setCanceledOnTouchOutside(false)
-            .show()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
         @Suppress("DEPRECATION")
         super.onActivityResult(requestCode, resultCode, resultData)
+        mFileSelector?.obtainResult(requestCode, resultCode, resultData)
         if (requestCode == REQUEST_CODE_SET_DEFAULT_DIALER) {
             if (isDefaultDialer()) reloadData() else showSetDefaultDialer()
         }
@@ -109,7 +108,7 @@ class BlockedNumbersActivity : BaseMvcActivity() {
     override fun initListener() {
         mIvBack.setOnClickListener { finish() }
         mTvTitle.setOnLongClickListener {
-            BlockedNumbersDaoManager.deleteBlockedNumbers()
+            BlockedNumbersDataManager.deleteBlockedNumbersDB()
             true
         }
         mTvEdit.setOnClickListener {
@@ -120,14 +119,14 @@ class BlockedNumbersActivity : BaseMvcActivity() {
             showEditBlockedNumberDialog()
         }
         mIvMore.setOnClickListener {
-            //showResetDefaultDialer()
+            showMoreMenu()
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         DialogManager.dismiss()
-        BlockedNumbersDaoManager.useDefault()
+        BlockedNumbersDataManager.useDefaultDB()
     }
 
     private fun reloadData() {
@@ -155,7 +154,6 @@ class BlockedNumbersActivity : BaseMvcActivity() {
                     }
                 })
             }
-
         }))
     }
 
@@ -168,9 +166,8 @@ class BlockedNumbersActivity : BaseMvcActivity() {
             getString(R.string.cancel),
             false
         ) {
-            if (it) {
-                BlockedNumbersUtils.launchSetDefaultDialerIntent(this)
-            } else finish()
+            if (it) BlockedNumbersUtils.launchSetDefaultDialerIntent(this)
+            else finish()
         }
     }
 
@@ -179,30 +176,65 @@ class BlockedNumbersActivity : BaseMvcActivity() {
             .setContext(this)
             .setContentView(R.layout.layout_blocked_number_pop)
             .setAnimationStyle(R.style.RightTop2PopAnim)
-            .setOnViewListener { view, popup ->
-                val arrowView = view.findViewById<View>(R.id.v_arrow)
-                @Suppress("DEPRECATION")
+            .setOnViewListener { v, popup ->
+                val arrowView = v.findViewById<View>(R.id.v_arrow)
                 arrowView.background = TriangleDrawable(
                     TriangleDrawable.TOP,
-                    resources.getColor(R.color.color_container_bg)
+                    resources.getColor(R.color.white)
                 )
-                val resetDefaultDialerView = view.findViewById<TextView>(R.id.tv_reset)
-                resetDefaultDialerView.setOnClickListener {
+                //重置
+                v.findViewById<TextView>(R.id.tv_reset).setOnClickListener {
                     popup?.dismiss()
                     BlockedNumbersUtils.launchSetDefaultDialerIntent(this)
                 }
+                //导出
+                v.findViewById<TextView>(R.id.tv_export).setOnClickListener {
+                    popup?.dismiss()
+                    BlockedNumbersDataManager.export {
+                        //打开文件(json)
+//                        FileOpener.openFileBySystemChooser(this,
+//                            FileUri.getUriByFile(it), "application/json"
+//                        )
+
+                        //分享文件(json)
+                        FileUri.getUriByFile(it)?.apply {
+                            FileOpener.openShare(this@BlockedNumbersActivity, this)
+                        }
+                    }
+                }
+                //导入
+                v.findViewById<TextView>(R.id.tv_import).setOnClickListener {
+                    popup?.dismiss()
+
+                    mFileSelector = FileSelector.with(this)
+                        .setMimeTypes("application/json")
+                        .callback(object : FileSelectCallBack {
+                            override fun onError(e: Throwable?) {
+                                Log.e("123", e?.toString())
+                            }
+
+                            override fun onSuccess(results: List<FileSelectResult>?) {
+                                results?.first()?.apply {
+                                    Log.e("123", "${this.uri}")
+                                    uri?.apply { BlockedNumbersDataManager.import(this) }
+                                }
+                            }
+                        })
+                        .choose()
+                }
             }
             .setFocusAndOutsideEnable(true)
-//          .setBackgroundDimEnable(true)
-//          .setDimValue(0.5f)
+            .setBackgroundDimEnable(true)
+            .setDimValue(0.3f)
 //          .setDimColor(Color.RED)
 //          .setDimView(mTitleBar)
             .apply()
     }
 
-    private fun showResetDefaultDialer() {
-        val offsetX = dp2px(this, 20) - mIvMore.width / 2
+    private fun showMoreMenu() {
+        val offsetX = resources.getDimensionPixelSize(R.dimen.dp_20) - mIvMore.width / 2
         val offsetY = (mTvTitle.height - mIvMore.height) / 2
+
         mMorePopup.showAtAnchorView(
             mIvMore,
             YGravity.BELOW,

@@ -2,7 +2,6 @@ package ando.guard.utils
 
 import ando.file.core.FileUtils
 import ando.guard.App
-import ando.guard.common.toastShort
 import android.app.Activity
 import android.content.*
 import android.content.res.Resources
@@ -106,14 +105,15 @@ fun showKeyboard(window: Window?, editText: EditText) {
 }
 
 fun AlertDialog.hideKeyboard() {
-    window!!.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
+    window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
 }
 
 fun String.copyToClipBoard() {
     val cm: ClipboardManager? =
         App.INSTANCE.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager?
     if (cm != null) {
-        cm.setPrimaryClip(ClipData.newPlainText(null, this))//参数一：标签，可为空，参数二：要复制到剪贴板的文本
+        //参数一：标签，可为空，参数二：要复制到剪贴板的文本
+        cm.primaryClip = ClipData.newPlainText(null, this)
         if (cm.hasPrimaryClip()) {
             cm.primaryClip?.getItemAt(0)?.text
         }
@@ -125,7 +125,6 @@ fun Context.hideSoftInput(activity: Activity) {
     (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?)
         ?.hideSoftInputFromWindow(view.windowToken, 0)
 }
-
 
 fun TextView.underlineText() {
     paintFlags = paintFlags or Paint.UNDERLINE_TEXT_FLAG
@@ -189,21 +188,15 @@ fun readAssetsDataFile(
  */
 fun readAssetsDataString(fileName: String): String {
     val sb = StringBuilder()
-    var bf: BufferedReader? = null
     try {
-        bf = BufferedReader(InputStreamReader(App.INSTANCE.assets.open(fileName)))
-        var line: String?
-        while (bf.readLine().also { line = it } != null) {
-            sb.append(line)
+        BufferedReader(InputStreamReader(App.INSTANCE.assets.open(fileName))).use { bf ->
+            var line: String?
+            while (bf.readLine().also { line = it } != null) {
+                sb.append(line)
+            }
         }
     } catch (e: IOException) {
         e.printStackTrace()
-    } finally {
-        try {
-            bf?.close()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
     }
     return sb.toString()
 }
@@ -233,27 +226,6 @@ val Context.screenWidth: Int
  */
 val Context.screenHeight: Int
     get() = resources.displayMetrics.heightPixels
-
-fun Context.browser(url: String, newTask: Boolean = false): Boolean {
-    return try {
-        val intent = Intent(Intent.ACTION_VIEW)
-        intent.data = Uri.parse(url)
-        if (newTask) {
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        }
-        //startActivity(intent)
-        //https://developer.android.com/about/versions/11/privacy/package-visibility
-        if (intent.resolveActivity(packageManager) != null) {
-            startActivity(Intent.createChooser(intent, "请选择浏览器"))
-        } else {
-            toastShort("没有可用浏览器")
-        }
-        true
-    } catch (e: ActivityNotFoundException) {
-        e.printStackTrace()
-        false
-    }
-}
 
 //MediaStore
 //------------------------------------------------------------------------------------------------

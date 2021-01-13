@@ -4,7 +4,7 @@
 
     <string name="flavor_blocked_numbers">@string/blocked_numbers</string>
     <string name="flavor_bilibili">哔哩哔哩</string>
-    <string name="str_dialog_loading">正在导入数据, 请稍候…</string>
+    <string name="str_dialog_loading">正在导入数据…</string>
 
     <string name="ok">确认</string>
     <string name="cancel">取消</string>
@@ -70,6 +70,8 @@
 
     <!-- Blocked numbers -->
     <string name="reset_default_dialer_tip">重新设置默认拨号程序</string>
+    <string name="block_numbers_export">导出本机黑名单</string>
+    <string name="block_numbers_import">导入外部黑名单</string>
     <string name="set_default_dialer_tip">设为默认拨号程序</string>
     <string name="must_make_default_dialer">你必须将应用程序设为默认的拨号程序后才能使用黑名单。</string>
     <string name="manage_blocked_numbers">管理黑名单</string>
