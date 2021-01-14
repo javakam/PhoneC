@@ -25,16 +25,9 @@ class BlockedNumberDialog(
 
         val editText = view.findViewById<EditText>(R.id.edt_blocked_number)
 
-        AlertDialog.Builder(activity)
+        val builder = AlertDialog.Builder(activity)
             .setView(view)
             .setCancelable(true)
-            .setNeutralButton(
-                "移出黑名单"
-            ) { dialog, _ ->
-                dialog.dismiss()
-                activity.hideSoftInput(activity)
-                callback.invoke("delete")
-            }
             .setPositiveButton(
                 R.string.ok
             ) { dialog, _ ->
@@ -54,8 +47,18 @@ class BlockedNumberDialog(
                 dialog.dismiss()
                 activity.hideSoftInput(activity)
             }
-            .create()
-            .show()
+
+        if (originalNumber != null) {
+            builder.setNeutralButton(
+                "移出黑名单"
+            ) { dialog, _ ->
+                dialog.dismiss()
+                activity.hideSoftInput(activity)
+                callback.invoke("delete")
+            }
+        }
+
+        builder.show()
 
         showKeyboard(activity.window, editText)
     }

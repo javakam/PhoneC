@@ -42,6 +42,9 @@ object BlockedNumbersUtils {
     fun isDefaultDialer() =
         (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) && (context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager).defaultDialerPackage == context.packageName
 
+    /**
+     * todo 2021年1月14日 16:41:35 修改回默认的拨号软件
+     */
     @SuppressLint("QueryPermissionsNeeded")
     @TargetApi(Build.VERSION_CODES.M)
     fun launchSetDefaultDialerIntent(activity: AppCompatActivity) {

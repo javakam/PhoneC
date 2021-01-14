@@ -1,7 +1,7 @@
 package ando.guard.block
 
-import ando.file.core.FileUri
 import ando.file.core.FileUtils
+import ando.file.core.FileUtils.deleteFilesButDir
 import ando.guard.App
 import ando.guard.R
 import ando.guard.block.db.BlockedNumber
@@ -11,13 +11,11 @@ import ando.guard.common.FILE_BLOCKED_NUMBERS
 import ando.guard.utils.*
 import android.net.Uri
 import android.util.Log
-import androidx.core.net.toUri
 import com.google.gson.reflect.TypeToken
 import org.litepal.LitePal
 import org.litepal.LitePal.use
 import org.litepal.LitePalDB
-import java.io.File
-import java.nio.charset.Charset
+import java.io.*
 
 object BlockedNumbersDataManager {
 
@@ -90,7 +88,7 @@ object BlockedNumbersDataManager {
             GsonUtils.toJson(numbers, object : TypeToken<List<BlockedNumber>>() {}.type)
 
         return if (!json.isNullOrBlank()) {
-            write2File(
+            FileUtils.write2File(
                 json.byteInputStream(Charsets.UTF_8),
                 parentPath, fileName
             )
@@ -128,8 +126,7 @@ object BlockedNumbersDataManager {
 
     fun import(uri: Uri, block: (Boolean) -> Unit) {
         ThreadUtils.executeByCached(ThreadTask({
-            val path = FileUri.getFilePathByUri(uri)
-            FileUtils.readFileText(path)
+            FileUtils.readFileText(uri)
         }, { s ->
             if (s.isNullOrBlank()) {
                 block.invoke(false)

@@ -130,40 +130,6 @@ fun TextView.underlineText() {
     paintFlags = paintFlags or Paint.UNDERLINE_TEXT_FLAG
 }
 
-fun deleteFilesButDir(file: File?, vararg excludeDirs: String?): Int {
-    var count = 0
-    if (file == null || !file.exists()) return count
-    if (file.isDirectory) {
-        val children = file.listFiles()
-        var i = 0
-        while (children != null && i < children.size) {
-            count += FileUtils.deleteFile(children[i])
-            i++
-        }
-    }
-    if (!excludeDirs.isNullOrEmpty()) {
-        excludeDirs.forEach {
-            if (it?.equals(file.name, true) == false) if (file.delete()) count++
-        }
-    } else {
-        if (file.delete()) count++
-    }
-    return count
-}
-
-fun write2File(input: InputStream?, fileParentPath: String?, fileName: String?) {
-    if (fileParentPath.isNullOrBlank() || fileName.isNullOrBlank()) return
-    val targetFile = File(fileParentPath, fileName)
-    if (targetFile.exists() && targetFile.isDirectory) targetFile.delete()
-    if (targetFile.parentFile?.exists() == false) {
-        targetFile.parentFile?.mkdirs()
-    }
-    if (!targetFile.exists()) {
-        targetFile.createNewFile()
-    }
-    FileUtils.write2File(input, targetFile.absolutePath)
-}
-
 /**
  * 读取 `assets` 下的 `*.db` 文件 , 原理是把`io`写入到`Android`本地目录再读取
  *
@@ -176,7 +142,7 @@ fun readAssetsDataFile(
 ) {
     try {
         App.INSTANCE.assets.open(assetsFileName).use {
-            write2File(it, targetFileParentPath, targetFileName)
+            FileUtils.write2File(it, targetFileParentPath, targetFileName)
         }
     } catch (e: IOException) {
         e.printStackTrace()

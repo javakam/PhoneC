@@ -1,7 +1,6 @@
 package ando.guard.block.ui
 
 import ando.dialog.core.DialogManager
-import ando.file.core.FileMimeType
 import ando.file.core.FileOpener
 import ando.file.core.FileUri
 import ando.file.selector.FileSelectCallBack
@@ -9,16 +8,16 @@ import ando.file.selector.FileSelectResult
 import ando.file.selector.FileSelector
 import ando.guard.R
 import ando.guard.base.BaseMvcActivity
-import ando.guard.block.BlockedNumbersUtils
-import ando.guard.block.db.BlockedNumber
 import ando.guard.block.BlockedNumbersDataManager
-import ando.guard.common.showAlert
-import ando.guard.common.supportImmersion
-import ando.guard.utils.*
+import ando.guard.block.BlockedNumbersUtils
 import ando.guard.block.BlockedNumbersUtils.REQUEST_CODE_SET_DEFAULT_DIALER
 import ando.guard.block.BlockedNumbersUtils.isDefaultDialer
+import ando.guard.block.db.BlockedNumber
 import ando.guard.block.proceedBlockedNumbersWork
+import ando.guard.common.showAlert
 import ando.guard.common.showLoadingDialog
+import ando.guard.common.supportImmersion
+import ando.guard.utils.*
 import ando.guard.views.BaseRecyclerAdapter
 import ando.guard.views.BaseViewHolder
 import ando.guard.views.XRecyclerAdapter
@@ -28,7 +27,6 @@ import ando.guard.views.popup.XGravity
 import ando.guard.views.popup.YGravity
 import android.content.Intent
 import android.graphics.Rect
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -91,7 +89,7 @@ class BlockedNumbersActivity : BaseMvcActivity() {
                 doAsyncDelay({
                     reloadData()
                     DialogManager.dismiss()
-                }, 500L)
+                }, 350L)
             }
         }
     }
@@ -183,18 +181,17 @@ class BlockedNumbersActivity : BaseMvcActivity() {
                     resources.getColor(R.color.white)
                 )
                 //重置
-                v.findViewById<TextView>(R.id.tv_reset).setOnClickListener {
+                v.findViewById<TextView>(R.id.tv_reset).gone()
+                /*v.findViewById<TextView>(R.id.tv_reset).setOnClickListener {
                     popup?.dismiss()
                     BlockedNumbersUtils.launchSetDefaultDialerIntent(this)
-                }
+                }*/
                 //导出
                 v.findViewById<TextView>(R.id.tv_export).setOnClickListener {
                     popup?.dismiss()
                     BlockedNumbersDataManager.export {
                         //打开文件(json)
-//                        FileOpener.openFileBySystemChooser(this,
-//                            FileUri.getUriByFile(it), "application/json"
-//                        )
+                        //FileOpener.openFileBySystemChooser(this, FileUri.getUriByFile(it), "application/json")
 
                         //分享文件(json)
                         FileUri.getUriByFile(it)?.apply {
@@ -214,9 +211,12 @@ class BlockedNumbersActivity : BaseMvcActivity() {
                             }
 
                             override fun onSuccess(results: List<FileSelectResult>?) {
-                                results?.first()?.apply {
-                                    Log.e("123", "${this.uri}")
-                                    uri?.apply { BlockedNumbersDataManager.import(this) }
+                                results?.firstOrNull()?.apply {
+                                    uri?.apply {
+                                        BlockedNumbersDataManager.import(this) {
+                                            reloadData()
+                                        }
+                                    }
                                 }
                             }
                         })
