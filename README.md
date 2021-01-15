@@ -12,7 +12,6 @@
 2.屏蔽一些用户的所有信息(此人发的视频和言论等等, 根据uid)
 3.
 
-
 ##
 
 ```kotlin
@@ -106,7 +105,6 @@ startActivityForResult(rm.createRequestRoleIntent(RoleManager.ROLE_DIALER),
 
 
 
-
 ## Thanks
 
 <https://github.com/blainepwnz/AndroidContacts>
@@ -116,4 +114,12 @@ startActivityForResult(rm.createRequestRoleIntent(RoleManager.ROLE_DIALER),
 <https://github.com/iostream17/MyContacts>
 
 <https://github.com/arekolek/simple-phone>
+
+<https://juejin.cn/post/6844903456809943053>
+
+<https://github.com/xuyisheng/AccessibilityUtil>
+
+<https://github.com/unclepizza/AutoClickService>
+
+<https://blog.csdn.net/qq_28356833/article/details/83145931>
 

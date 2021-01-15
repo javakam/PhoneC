@@ -52,7 +52,6 @@ fun showAlert(
     cancelable: Boolean,
     block: (isPositive: Boolean) -> Unit
 ) {
-    GLOBAL_DIALOG?.dismiss()
     GLOBAL_DIALOG = AlertDialog.Builder(context)
         .setTitle(title)
         .setMessage(msg)
@@ -63,9 +62,14 @@ fun showAlert(
         .setNegativeButton(negativeText) { _, _ ->
             block.invoke(false)
         }
+        .apply {
+            GLOBAL_DIALOG?.dismiss()
+            GLOBAL_DIALOG = null
+        }
         .create()
-
-    GLOBAL_DIALOG?.show()
+        .apply {
+            show()
+        }
 }
 
 

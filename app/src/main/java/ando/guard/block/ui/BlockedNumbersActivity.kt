@@ -17,6 +17,7 @@ import ando.guard.block.proceedBlockedNumbersWork
 import ando.guard.common.showAlert
 import ando.guard.common.showLoadingDialog
 import ando.guard.common.supportImmersion
+import ando.guard.common.toastLong
 import ando.guard.utils.*
 import ando.guard.views.BaseRecyclerAdapter
 import ando.guard.views.BaseViewHolder
@@ -59,39 +60,36 @@ class BlockedNumbersActivity : BaseMvcActivity() {
         mTvEdit.text = getString(R.string.edit)
         mTvEdit.gone()
 
+        initRecyclerView()
+
         BlockedNumbersDataManager.useBlockedNumbersDB()
 
-        if (!isDefaultDialer()) {
-            showSetDefaultDialer()
+        if (isDefaultDialer()) {
+            fetchData()
         } else {
-            mRecyclerView.visible()
-            mRecyclerView.setHasFixedSize(true)
-            mRecyclerView.itemAnimator = null
-            mRecyclerView.layoutManager =
-                LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-
-            mRecyclerView.addItemDecoration(object : RecyclerView.ItemDecoration() {
-                override fun getItemOffsets(
-                    outRect: Rect,
-                    view: View,
-                    parent: RecyclerView,
-                    state: RecyclerView.State
-                ) {
-                    super.getItemOffsets(outRect, view, parent, state)
-                    outRect.set(0, 1, 0, 1)
-                }
-            })
-            mRecyclerView.adapter = mAdapter
-
-            showLoadingDialog(this)
-            proceedBlockedNumbersWork(this) {
-                //延迟500毫秒, 显示效果好一点(#^.^#)
-                doAsyncDelay({
-                    reloadData()
-                    DialogManager.dismiss()
-                }, 350L)
-            }
+            showSetDefaultDialer()
         }
+    }
+
+    private fun initRecyclerView() {
+        mRecyclerView.visible()
+        mRecyclerView.setHasFixedSize(true)
+        mRecyclerView.itemAnimator = null
+        mRecyclerView.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+
+        mRecyclerView.addItemDecoration(object : RecyclerView.ItemDecoration() {
+            override fun getItemOffsets(
+                outRect: Rect,
+                view: View,
+                parent: RecyclerView,
+                state: RecyclerView.State
+            ) {
+                super.getItemOffsets(outRect, view, parent, state)
+                outRect.set(0, 1, 0, 1)
+            }
+        })
+        mRecyclerView.adapter = mAdapter
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
@@ -99,7 +97,7 @@ class BlockedNumbersActivity : BaseMvcActivity() {
         super.onActivityResult(requestCode, resultCode, resultData)
         mFileSelector?.obtainResult(requestCode, resultCode, resultData)
         if (requestCode == REQUEST_CODE_SET_DEFAULT_DIALER) {
-            if (isDefaultDialer()) reloadData() else showSetDefaultDialer()
+            if (isDefaultDialer()) fetchData() else showSetDefaultDialer()
         }
     }
 
@@ -125,6 +123,17 @@ class BlockedNumbersActivity : BaseMvcActivity() {
         super.onDestroy()
         DialogManager.dismiss()
         BlockedNumbersDataManager.useDefaultDB()
+    }
+
+    private fun fetchData() {
+        showLoadingDialog(this)
+        proceedBlockedNumbersWork(this) {
+            //延迟500毫秒, 显示效果好一点(#^.^#)
+            doAsyncDelay({
+                reloadData()
+                DialogManager.dismiss()
+            }, 200L)
+        }
     }
 
     private fun reloadData() {
@@ -181,7 +190,6 @@ class BlockedNumbersActivity : BaseMvcActivity() {
                     resources.getColor(R.color.white)
                 )
                 //重置
-                v.findViewById<TextView>(R.id.tv_reset).gone()
                 /*v.findViewById<TextView>(R.id.tv_reset).setOnClickListener {
                     popup?.dismiss()
                     BlockedNumbersUtils.launchSetDefaultDialerIntent(this)
@@ -208,6 +216,7 @@ class BlockedNumbersActivity : BaseMvcActivity() {
                         .callback(object : FileSelectCallBack {
                             override fun onError(e: Throwable?) {
                                 Log.e("123", e?.toString())
+                                toastLong("导入失败!")
                             }
 
                             override fun onSuccess(results: List<FileSelectResult>?) {
@@ -215,6 +224,7 @@ class BlockedNumbersActivity : BaseMvcActivity() {
                                     uri?.apply {
                                         BlockedNumbersDataManager.import(this) {
                                             reloadData()
+                                            toastLong("导入成功!")
                                         }
                                     }
                                 }

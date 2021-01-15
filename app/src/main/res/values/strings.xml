@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">(￣▽￣)</string>
+    <string name="app_name">PhoneC</string>
+    <string name="accessibility_label">PhoneC无障碍服务</string><!-- AccessibilityService Label -->
 
     <string name="flavor_blocked_numbers">@string/blocked_numbers</string>
-    <string name="flavor_bilibili">哔哩哔哩</string>
+    <string name="flavor_bilibili_open">哔哩哔哩(开启服务)</string>
+    <string name="flavor_bilibili_close">哔哩哔哩(关闭服务)</string>
+
+    <!-- Dialog -->
     <string name="str_dialog_loading">正在导入数据…</string>
 
     <string name="ok">确认</string>

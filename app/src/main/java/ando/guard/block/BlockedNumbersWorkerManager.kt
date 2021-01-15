@@ -40,21 +40,22 @@ internal class BlockedNumbersDatabaseWorker(
 ) : CoroutineWorker(context, workerParams) {
     override suspend fun doWork(): Result = coroutineScope {
         try {
-            val isJsonFileExist = BlockedNumbersDataManager.isFileJsonExist()
             if (BuildConfig.DEBUG) {
                 Log.e(
-                    "123", "Thread= ${Thread.currentThread()} isJsonFileExist= $isJsonFileExist"
+                    "123",
+                    "isBlockedNumbersWritten=${BlockedNumbersDataManager.isBlockedNumbersWritten()}"
                 )
             }
 
-            if (!isJsonFileExist) {
+            if (!BlockedNumbersDataManager.isBlockedNumbersWritten()) {
                 BlockedNumbersDataManager.loadFromJson().run {
                     if (isNotEmpty()) {
                         forEach { n: BlockedNumber ->
                             BlockedNumbersUtils.addBlockedNumber(n.number)
                         }
-                        BlockedNumbersDataManager.cacheToJson(this)
+                        //BlockedNumbersDataManager.cacheToJson(this)
                         //BlockedNumbersDaoManager.removeBlockedNumbersFileJson()
+                        BlockedNumbersDataManager.markBlockedNumbersWritten()
                         buildResult("ok", true)
                     } else buildResult("load from json file failed", false)
                 }

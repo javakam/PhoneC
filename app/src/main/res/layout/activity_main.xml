@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/color_container_gray"
     android:gravity="center_horizontal"
     android:orientation="vertical">
@@ -24,6 +25,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
+        tools:visibility="visible"
         android:text="@string/contacts" />
 
     <androidx.appcompat.widget.AppCompatButton
@@ -33,10 +35,18 @@
         android:text="@string/flavor_blocked_numbers" />
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/bt_bilibili"
+        android:id="@+id/bt_bilibili_open"
+        android:layout_marginTop="@dimen/dp_20"
+        android:layout_width="wrap_content"
+        android:visibility="gone"
+        android:layout_height="wrap_content"
+        android:text="@string/flavor_bilibili_open" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/bt_bilibili_close"
         android:layout_marginTop="@dimen/dp_20"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/flavor_bilibili" />
+        android:text="@string/flavor_bilibili_close" />
 
 </LinearLayout>

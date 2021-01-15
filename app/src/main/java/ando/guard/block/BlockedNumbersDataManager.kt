@@ -3,6 +3,7 @@ package ando.guard.block
 import ando.file.core.FileUtils
 import ando.file.core.FileUtils.deleteFilesButDir
 import ando.guard.App
+import ando.guard.BuildConfig
 import ando.guard.R
 import ando.guard.block.db.BlockedNumber
 import ando.guard.block.db.BlockedNumberDao
@@ -18,6 +19,19 @@ import org.litepal.LitePalDB
 import java.io.*
 
 object BlockedNumbersDataManager {
+
+    fun markBlockedNumbersWritten() {
+        SPUtils.get().put("blocked_code", BuildConfig.VERSION_CODE)
+        SPUtils.get().put("blocked_written", true)
+    }
+
+    fun isBlockedNumbersWritten(): Boolean {
+        val isAppUpdated = (SPUtils.get().getInt("blocked_code", -1) != BuildConfig.VERSION_CODE)
+        val isWritten = SPUtils.get().getBoolean("blocked_written", false)
+        return !isAppUpdated && isWritten
+    }
+
+    /////////////////////////
 
     // `/mnt/sdcard/Android/data/ando.guard/files/黑名单/blockednumbers.json`
     private val blackParentPath: String by lazy {
@@ -109,6 +123,10 @@ object BlockedNumbersDataManager {
     }
     private val blackExportCacheFile: File by lazy {
         File(blackExportCacheParentPath, "$FILE_BLOCKED_NUMBERS.json")
+    }
+
+    fun removeBlockedNumbersCacheJson() {
+        deleteFilesButDir(blackExportCacheFile)
     }
 
     fun export(block: (File) -> Unit) {

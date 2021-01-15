@@ -58,7 +58,7 @@ class SplashActivity : BaseMvcActivity() {
         return view
     }
 
-    private val timer: CountDownTimer = object : CountDownTimer(500, 500) {
+    private val timer: CountDownTimer = object : CountDownTimer(200, 200) {
         override fun onTick(millisUntilFinished: Long) {
         }
 
