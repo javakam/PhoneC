@@ -15,7 +15,7 @@
 2.屏蔽一些用户的所有信息(此人发的视频和言论等等, 根据uid)
 
 
-##
+## 设置`APP`为默认拨号程序
 
 ```kotlin
 @TargetApi(Build.VERSION_CODES.M)
@@ -36,11 +36,6 @@ protected fun launchSetDefaultDialerIntent() {
     }
 }
 ```
-
-
-## PopupWindow
-<https://github.com/zyyoona7/EasyPopup>
-
 
 ## Bug
 ```kotlin
@@ -109,6 +104,8 @@ startActivityForResult(rm.createRequestRoleIntent(RoleManager.ROLE_DIALER),
 
 
 ## Thanks
+
+<https://github.com/zyyoona7/EasyPopup>
 
 <https://github.com/blainepwnz/AndroidContacts>
 
