@@ -212,10 +212,10 @@ class BlockedNumbersActivity : BaseMvcActivity() {
                     popup?.dismiss()
 
                     mFileSelector = FileSelector.with(this)
-                        .setMimeTypes("application/json")
+                        .setExtraMimeTypes("application/json")
                         .callback(object : FileSelectCallBack {
                             override fun onError(e: Throwable?) {
-                                Log.e("123", e?.toString())
+                                Log.e("123", "${e?.toString()}")
                                 toastLong("导入失败!")
                             }
 

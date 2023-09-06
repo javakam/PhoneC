@@ -11,10 +11,6 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 
 /**
- * Title: $
- * <p>
- * Description:
- * </p>
  * @author javakam
  * @date 2020/12/28  15:07
  */

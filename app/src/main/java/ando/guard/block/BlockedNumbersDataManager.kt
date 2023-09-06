@@ -1,7 +1,7 @@
 package ando.guard.block
 
 import ando.file.core.FileUtils
-import ando.file.core.FileUtils.deleteFilesButDir
+import ando.file.core.FileUtils.deleteFilesNotDir
 import ando.guard.App
 import ando.guard.BuildConfig
 import ando.guard.R
@@ -111,7 +111,7 @@ object BlockedNumbersDataManager {
     }
 
     fun removeBlockedNumbersFileJson() {
-        deleteFilesButDir(blackFile)
+        deleteFilesNotDir(blackFile)
     }
 
     //Export
@@ -126,14 +126,14 @@ object BlockedNumbersDataManager {
     }
 
     fun removeBlockedNumbersCacheJson() {
-        deleteFilesButDir(blackExportCacheFile)
+        deleteFilesNotDir(blackExportCacheFile)
     }
 
     fun export(block: (File) -> Unit) {
         ThreadUtils.executeByCached(ThreadTask({
             BlockedNumbersUtils.getBlockedNumbers()
         }, {
-            deleteFilesButDir(blackExportCacheFile)
+            deleteFilesNotDir(blackExportCacheFile)
             it?.apply {
                 val result: Boolean =
                     cacheToJson(this, blackExportCacheParentPath, blackExportCacheFile.name)

@@ -113,7 +113,7 @@ fun String.copyToClipBoard() {
         App.INSTANCE.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager?
     if (cm != null) {
         //参数一：标签，可为空，参数二：要复制到剪贴板的文本
-        cm.primaryClip = ClipData.newPlainText(null, this)
+        cm.setPrimaryClip(ClipData.newPlainText(null, this))
         if (cm.hasPrimaryClip()) {
             cm.primaryClip?.getItemAt(0)?.text
         }

@@ -195,7 +195,7 @@ object AccessibilityUtils {
 
     fun findNodesById(
         service: AccessibilityService,
-        viewId: String?
+        viewId: String
     ): List<AccessibilityNodeInfo>? =
         getRootNodeInfo(service)?.run {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
@@ -237,7 +237,7 @@ object AccessibilityUtils {
      * @return View
      */
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
-    fun findViewById(service: AccessibilityService, id: String?): AccessibilityNodeInfo? {
+    fun findViewById(service: AccessibilityService, id: String): AccessibilityNodeInfo? {
         val accessibilityNodeInfo = service.rootInActiveWindow ?: return null
         val nodeInfoList = accessibilityNodeInfo.findAccessibilityNodeInfosByViewId(id)
         if (nodeInfoList != null && nodeInfoList.isNotEmpty()) {
@@ -250,7 +250,7 @@ object AccessibilityUtils {
         return null
     }
 
-    fun clickTextViewByText(service: AccessibilityService, text: String?) {
+    fun clickTextViewByText(service: AccessibilityService, text: String) {
         val accessibilityNodeInfo = service.rootInActiveWindow ?: return
         val nodeInfoList = accessibilityNodeInfo.findAccessibilityNodeInfosByText(text)
         if (nodeInfoList != null && nodeInfoList.isNotEmpty()) {
@@ -264,7 +264,7 @@ object AccessibilityUtils {
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
-    fun clickTextViewByID(service: AccessibilityService, id: String?) {
+    fun clickTextViewByID(service: AccessibilityService, id: String) {
         val accessibilityNodeInfo = service.rootInActiveWindow ?: return
         val nodeInfoList = accessibilityNodeInfo.findAccessibilityNodeInfosByViewId(id)
         if (nodeInfoList != null && nodeInfoList.isNotEmpty()) {
@@ -283,7 +283,7 @@ object AccessibilityUtils {
      * @param nodeInfo nodeInfo
      * @param text     text
      */
-    fun inputText(nodeInfo: AccessibilityNodeInfo, text: String?) {
+    fun inputText(nodeInfo: AccessibilityNodeInfo, text: String) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             val arguments = Bundle()
             arguments.putCharSequence(
@@ -294,10 +294,9 @@ object AccessibilityUtils {
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             val clipboard = mContext.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
             val clip = ClipData.newPlainText("label", text)
-            clipboard.primaryClip = clip
+            clipboard.setPrimaryClip(clip)
             nodeInfo.performAction(AccessibilityNodeInfo.ACTION_FOCUS)
             nodeInfo.performAction(AccessibilityNodeInfo.ACTION_PASTE)
         }
     }
-
 }
