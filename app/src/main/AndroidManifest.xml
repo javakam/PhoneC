@@ -46,6 +46,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.MainActivity" />
+        <activity android:name=".contact.ContactActivity" />
         <activity
             android:name=".block.ui.BlockedNumbersActivity"
             android:exported="true">
@@ -65,11 +66,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
-
-        <activity android:name=".contact.ContactManager" />
-        <activity android:name=".contact.ContactAdder" />
-        <activity android:name=".ui.PickContactActivity" />
 
         <service
             android:name=".autoservice.BilibiliAccessibility"

@@ -41,10 +41,9 @@ class MainActivity : BaseMvcActivity() {
     }
 
     override fun initListener() {
-
         mBtContacts.setOnClickListener {
             PermissionManager.requestContactsPermission(this) {
-                if (it) AppRouter.toContactManagerActivity(this)
+                if (it) AppRouter.toContactActivity(this)
             }
         }
 
@@ -64,8 +63,8 @@ class MainActivity : BaseMvcActivity() {
         }
         mBtFlavorBilibiliClose.setOnClickListener {
             proceedAccessibilityService {
-                val i = Intent(this@MainActivity, BilibiliAccessibility::class.java)
-                stopService(i)
+//                val i = Intent(this@MainActivity, BilibiliAccessibility::class.java)
+//                stopService(i)
                 toastShort("服务已关闭")
             }
         }

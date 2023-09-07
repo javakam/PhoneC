@@ -3,6 +3,11 @@
     <string name="app_name">PhoneC</string>
     <string name="accessibility_label">PhoneC无障碍服务</string><!-- AccessibilityService Label -->
 
+    <string-array name="sort_options">
+        <item>按姓名排序</item>
+        <item>按手机号排序</item>
+    </string-array>
+
     <string name="flavor_blocked_numbers">@string/blocked_numbers</string>
     <string name="flavor_bilibili_open">哔哩哔哩(开启服务)</string>
     <string name="flavor_bilibili_close">哔哩哔哩(关闭服务)</string>

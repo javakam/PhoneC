@@ -24,7 +24,7 @@
         android:id="@+id/bt_contacts"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
+        android:visibility="visible"
         tools:visibility="visible"
         android:text="@string/contacts" />
 

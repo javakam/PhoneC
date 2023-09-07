@@ -1,8 +1,8 @@
 package ando.guard.common
 
 import ando.guard.base.BaseActivity
-import ando.guard.contact.ContactManager
 import ando.guard.block.ui.BlockedNumbersActivity
+import ando.guard.contact.ContactActivity
 import android.content.Intent
 
 /**
@@ -15,8 +15,8 @@ import android.content.Intent
  */
 object AppRouter {
 
-    fun toContactManagerActivity(activity: BaseActivity) {
-        activity.startActivity(Intent(activity, ContactManager::class.java))
+    fun toContactActivity(activity: BaseActivity) {
+        activity.startActivity(Intent(activity, ContactActivity::class.java))
     }
 
     fun toBlockedNumbersActivity(activity: BaseActivity) {

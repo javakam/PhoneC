@@ -52,13 +52,30 @@ class SplashActivity : BaseMvcActivity() {
         textView.layoutParams = paramsTextView
         view.addView(textView)
 
+        val textSkip = TextView(this)
+        textSkip.text = "跳过"
+        textSkip.setTextColor(Color.WHITE)
+        textSkip.textSize = 14F
+        val paramsSkip = FrameLayout.LayoutParams(
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+        paramsSkip.gravity = Gravity.BOTTOM
+        paramsSkip.bottomMargin = 100
+        textSkip.layoutParams = paramsSkip
+        textSkip.setOnClickListener {
+            startActivity(Intent(this@SplashActivity, MainActivity::class.java))
+            finish()
+        }
+        view.addView(textSkip)
+
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             view.setBackgroundColor(resources.getColor(R.color.color_main_theme, theme))
         }
         return view
     }
 
-    private val timer: CountDownTimer = object : CountDownTimer(200, 200) {
+    private val timer: CountDownTimer = object : CountDownTimer(2900, 2900) {
         override fun onTick(millisUntilFinished: Long) {
         }
 
